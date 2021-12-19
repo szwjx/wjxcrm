@@ -8,8 +8,8 @@
   
   <typeAliases>
   
-<!--  	<package name="com.bjpowernode.crm.settings.domain"/>-->
-<!--  	<package name="com.bjpowernode.crm.workbench.domain"/>-->
+  	<package name="com/wjx/crm/settings/domain"/>
+
 
   
   </typeAliases>
@@ -29,8 +29,8 @@
  
   <mappers>
    
-<!--      <package name="com.bjpowernode.crm.settings.dao"/>-->
-<!--      <package name="com.bjpowernode.crm.workbench.dao"/>-->
+      <package name="com.wjx.crm.settings.dao.UserDao"/>
+
 
   </mappers>
 </configuration>
