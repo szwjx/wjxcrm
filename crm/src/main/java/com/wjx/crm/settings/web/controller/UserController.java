@@ -50,7 +50,7 @@ public class UserController extends HttpServlet {
         try {
             User user = us.login(loginAct,loginPwd,ip);
 
-            request.getSession().setAttribute("User",user);
+            request.getSession().setAttribute("user",user);
             //如果程序执行到此处，说明业务层没有为controller抛出任何的异常
             //表示登录成功
             /*
