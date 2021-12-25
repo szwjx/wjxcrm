@@ -9,6 +9,7 @@
   <typeAliases>
   
   	<package name="com.wjx.crm.settings.domain"/>
+    <package name="com.wjx.crm.workbench.domain"/>
 
 
   
@@ -28,8 +29,9 @@
   
  
   <mappers>
-   
-      <package name="com.wjx.crm.settings.dao"/>
+
+    <package name="com.wjx.crm.settings.dao"/>
+    <package name="com.wjx.crm.workbench.dao"/>
 
 
   </mappers>
