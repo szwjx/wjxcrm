@@ -36,7 +36,81 @@ public class ActivityController extends HttpServlet {
             save(request,response);
         }else  if("/workbench/activity/pageList.do".equals(path)){
             pageList(request,response);
+        }else  if("/workbench/activity/delete.do".equals(path)){
+            delete(request,response);
+        }else  if("/workbench/activity/getUserListAndActivity.do".equals(path)){
+            getUserListAndActivity(request,response);
+        }else  if("/workbench/activity/update.do".equals(path)){
+            update(request,response);
         }
+    }
+
+    private void update(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("执行市场活动修改操作");
+
+        String id = request.getParameter("id");
+        String owner = request.getParameter("owner");
+        String name = request.getParameter("name");
+        String startDate = request.getParameter("startDate");
+        String endDate = request.getParameter("endDate");
+        String cost = request.getParameter("cost");
+        String description = request.getParameter("description");
+        //修改时间，当前系统时间
+        String editTime = DateTimeUtil.getSysTime();
+        //修改人，当前登录用户
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+
+        Activity a = new Activity();
+        a.setId(id);
+        a.setOwner(owner);
+        a.setName(name);
+        a.setStartDate(startDate);
+        a.setEndDate(endDate);
+        a.setCost(cost);
+        a.setDescription(description);
+        a.setEditTime(editTime);
+        a.setEditBy(editBy);
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        boolean flag = as.update(a);
+
+        PrintJson.printJsonFlag(response,flag);
+    }
+
+    private void getUserListAndActivity(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("进入到查询用户信息列表和根据市场活动id查询单条记录的操作");
+
+        String id = request.getParameter("id");
+
+        /*
+            调用业务层获得一个前端需要的uList和activity （用a代替）对象
+         */
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        /*
+            uList
+            a
+
+            同时获得这两个值复用性不高不用vo,用map
+         */
+        Map<String,Object> map = as.getUserListAndActivity(id);
+
+        PrintJson.printJsonObj(response,map);
+
+    }
+
+    private void delete(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("执行删除市场活动");
+
+        //接收前端数据
+        String ids[] = request.getParameterValues("id");
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        boolean flag = as.delete(ids);
+
+        PrintJson.printJsonFlag(response,flag);
     }
 
     private void pageList(HttpServletRequest request, HttpServletResponse response) {
