@@ -15,18 +15,355 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
+	<link rel="stylesheet" type="text/css" href="jquery/bs_pagination/jquery.bs_pagination.min.css">
+	<script type="text/javascript" src="jquery/bs_pagination/jquery.bs_pagination.min.js"></script>
+	<script type="text/javascript" src="jquery/bs_pagination/en.js"></script>
 
 <script type="text/javascript">
 
 	$(function(){
+
+		//为创建按钮绑定事件，打开添加操作的模态窗口
+		$("#addBtn").click(function () {
+
+
+			$(".time").datetimepicker({
+				minView: "month",
+				language:  'zh-CN',
+				format: 'yyyy-mm-dd',
+				autoclose: true,
+				todayBtn: true,
+				pickerPosition: "bottom-left"
+			});
+			/*
+
+				操作模态窗口的方式：
+
+					需要操作的模态窗口的jquery对象，调用modal方法，为该方法传递参数 show:打开模态窗口   hide：关闭模态窗口
+
+
+			 */
+			//alert(123);
+			//$("#createActivityModal").modal("show");
+			//走后台，获得用户信息列表，为所有者下拉框赋值
+			$.ajax({
+				url :"workbench/clue/getUserList.do",
+				data : {
+
+				},
+				type:"get",
+				dataType:"json",
+				success:function (data) {
+
+					/*
+
+						data
+							[{"id":?,"name":?,"loginAct":?.......},{2},{3}...]
+
+					 */
+
+					var html = "<option></option>";
+
+					//遍历出来的每一个n，就是每一个user对象
+					$.each(data,function (i,n) {
+
+						html += "<option value='"+n.id+"'>"+n.name+"</option>";
+
+					})
+					$("#create-owner").html(html);
+
+					//将下拉框默认选项设为当前用户
+					//取得当前用户的id
+					//在js中使用EL表达式一定要套用在字符串中
+					var id = "${user.id}";
+
+					$("#create-owner").val(id);
+					//当所有者下拉框处理完毕后，展现模态窗口
+					$("#createClueModal").modal("show");
+				}
+			})
+		})
+
+		//为保存按钮绑定事件，执行添加操作
+		$("#saveBtn").click(function () {
+
+			$.ajax({
+				url : "workbench/clue/save.do",
+				data : {
+					"owner" : $.trim($("#create-owner").val()),
+					"company" : $.trim($("#create-company").val()),
+					"appellation" : $.trim($("#create-appellation").val()),
+					"fullname" : $.trim($("#create-fullname").val()),
+					"job" : $.trim($("#create-job").val()),
+					"email" : $.trim($("#create-email").val()),
+					"phone" : $.trim($("#create-phone").val()),
+					"website" : $.trim($("#create-website").val()),
+					"mphone" : $.trim($("#create-mphone").val()),
+					"state" : $.trim($("#create-state").val()),
+					"source" : $.trim($("#create-source").val()),
+					"description" : $.trim($("#create-description").val()),
+					"contactSummary" : $.trim($("#create-contactSummary").val()),
+					"nextContactTime" : $.trim($("#create-nextContactTime").val()),
+					"address" : $.trim($("#create-address").val())
+				},
+				type : "post",
+				dataType : "json",
+				success : function (data) {
+
+					/*
+
+                        data
+                            {"success":true/false}
+
+                     */
+					if(data.success){
+
+						//添加成功后
+						//刷新市场活动信息列表（局部刷新）
+						//pageList(1,2);
+						/*
+                            *
+                            * $("#activityPage").bs_pagination('getOption', 'currentPage'):
+                            * 		操作后停留在当前页
+                            *
+                            * $("#activityPage").bs_pagination('getOption', 'rowsPerPage')
+                            * 		操作后维持已经设置好的每页展现的记录数
+                            *
+                            * 这两个参数不需要我们进行任何的修改操作
+                            * 	直接使用即可
+                            *
+                            *
+                            *
+                            * */
+
+						//做完添加操作后，应该回到第一页，维持每页展现的记录数
+
+						pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+
+						/*
+                        *
+                        * $("#activityPage").bs_pagination('getOption', 'currentPage'):
+                        * 		操作后停留在当前页
+                        *
+                        * $("#activityPage").bs_pagination('getOption', 'rowsPerPage')
+                        * 		操作后维持已经设置好的每页展现的记录数
+                        *
+                        * 这两个参数不需要我们进行任何的修改操作
+                        * 	直接使用即可
+                        *
+                        *
+                        *
+                        * */
+
+						//做完添加操作后，应该回到第一页，维持每页展现的记录数
+
+						//pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+
+
+
+						//清空添加操作模态窗口中的数据
+						//提交表单
+						//$("#activityAddForm").submit();
+
+						/*
+
+                            注意：
+                                我们拿到了form表单的jquery对象
+                                对于表单的jquery对象，提供了submit()方法让我们提交表单
+                                但是表单的jquery对象，没有为我们提供reset()方法让我们重置表单（坑：idea为我们提示了有reset()方法）
+
+                                虽然jquery对象没有为我们提供reset方法，但是原生js为我们提供了reset方法
+                                所以我们要将jquery对象转换为原生dom对象
+
+                                jquery对象转换为dom对象：
+                                    jquery对象[下标]
+
+                                dom对象转换为jquery对象：
+                                    $(dom)
+
+
+                         */
+						$("#clueAddForm")[0].reset();
+
+						//关闭添加操作的模态窗口
+						$("#createClueModal").modal("hide");
+
+
+
+
+					}else{
+
+						alert("添加市场活动失败");
+
+					}
+				}
+			})
+
+		})
+
+		//页面加载完毕后触发一个方法
+		//默认展开列表第一页，每页展现两条记录
+		pageList(1,2);
+
+		//为删除按钮绑定事件，执行市场活动删除操作
+		$("#deleteBtn").click(function () {
+
+			//找到所有被选中的复选框的jquery对象
+			var $xz = $("input[name=xz]:checked");
+
+			if ($xz.length==0){
+				alert("请选择要删除的记录");
+				//选择了有可能是一条有可能是多条
+			}else {
+
+				if (confirm("确认删除所选中的记录吗？")){
+
+					//url:workbench/clue/delete.do?id=xxx&id=xxx&id=xxx
+					//拼接参数
+					var param = "";
+
+					//将$xz中的每一个dom对象遍历出来，取其value值就相当于取出了id值
+					for (i = 0;i<$xz.length;i++){
+						param += "id="+ $($xz[i]).val();
+
+						//如果不是最后一个元素，在其后加&符
+						if (i<$xz.length-1){
+							param += "&";
+						}
+					}
+					//alert(param);
+
+					$.ajax({
+						url : "workbench/clue/delete.do",
+						data : param,
+						type : "post",
+						dataType : "json",
+						success : function (data) {
+							/*
+                            * data
+                            *   {"success":true/false}
+                            * */
+							if (data.success){
+								//删除成功
+								//回到第一页，维持每页展现的记录数
+								pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+							}else {
+								alert("删除市场活动失败！")
+							}
+						}
+					})
+				}
+
+			}
+
+		})
 		
 		
 		
 	});
+
+    function pageList(pageNo,pageSize) {
+
+        //重新刷新线索区域是将全选框取消勾选
+        //$("#qx").prop("checked",false);
+
+        //查询前，将隐藏域中的信息取出来，重新赋予到搜索框
+        //$("#search-fullname").val($.trim($("#hidden-fullname").val())),
+        //$("#search-owner").val($.trim($("#hidden-owner").val())),
+        //$("#search-company").val($.trim($("#hidden-company").val())),
+        //$("#search-mphone").val($.trim($("#hidden-mphone").val())),
+		//$("#search-phone").val($.trim($("#hidden-phone").val())),
+		//$("#search-state").val($.trim($("#hidden-state").val())),
+		//$("#search-source").val($.trim($("#hidden-source").val())),
+
+            $.ajax({
+                url : "workbench/clue/pageList.do",
+                data : {
+
+                    "pageNo" : pageNo,
+                    "pageSize" : pageSize,
+                    "fullname" : $.trim($("#search-fullname").val()),
+                    "owner" : $.trim($("#search-owner").val()),
+                    "company" : $.trim($("#search-company").val()),
+                    "mphone" : $.trim($("#search-mphone").val()),
+					"phone" : $.trim($("#search-phone").val()),
+					"state" : $.trim($("#search-state").val()),
+					"source" : $.trim($("#search-source").val()),
+
+                },
+                type : "get",
+                dataType : "json",
+                success : function (data) {
+
+                    /*
+                        data
+
+                            我们需要的：市场活动信息列表
+                            [{市场活动1},{2},{3}] List<Activity> aList
+                            一会分页插件需要的：查询出来的总记录数
+                            {"total":100} int total
+
+                            {"total":100,"dataList":[{市场活动1},{2},{3}]}
+                     */
+                    var html = "";
+
+                    //每一个n就代表一个市场活动对象
+                    $.each(data.dataList,function (i,n) {
+						html += '<tr class="active">';
+						html += '<td><input type="checkbox" name="xz" value="'+n.id+'"/></td>';
+						html += '<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench/clue/detail.do?id='+n.id+'\';">'+n.fullname+n.appellation+'</a></td>';
+						html += '<td>'+n.company+'</td>';
+						html += '<td>'+n.phone+'</td>';
+						html += '<td>'+n.mphone+'</td>';
+						html += '<td>'+n.source+'</td>';
+						html += '<td>'+n.owner+'</td>';
+						html += '<td>'+n.state+'</td>';
+						html += '</tr>';
+
+                    })
+
+                    $("#clueBody").html(html);
+
+                    //计算总页数
+                    var totalPages = data.total%pageSize==0?data.total/pageSize:parseInt(data.total/pageSize)+1;
+
+                    //数据处理完毕后，结合分页插件对前端展现分页信息
+                    $("#activityPage").bs_pagination({
+                        currentPage: pageNo, // 页码
+                        rowsPerPage: pageSize, // 每页显示的记录条数
+                        maxRowsPerPage: 20, // 每页最多显示的记录条数
+                        totalPages: totalPages, // 总页数
+                        totalRows: data.total, // 总记录条数
+
+                        visiblePageLinks: 3, // 显示几个卡片
+
+                        showGoToPage: true,
+                        showRowsPerPage: true,
+                        showRowsInfo: true,
+                        showRowsDefaultInfo: true,
+
+                        //该回调函数是在，点击分页组件时触发的
+                        onChangePage : function(event, data){
+                            pageList(data.currentPage , data.rowsPerPage);
+                        }
+                    });
+
+                }
+            })
+    }
 	
 </script>
 </head>
 <body>
+
+    <input type="hidden" id="hidden-fullname" />
+	<input type="hidden" id="hidden-appellation" />
+	<input type="hidden" id="hidden-company" />
+	<input type="hidden" id="hidden-phone" />
+    <input type="hidden" id="hidden-mphone" />
+    <input type="hidden" id="hidden-source" />
+    <input type="hidden" id="hidden-owner" />
+	<input type="hidden" id="hidden-state" />
 
 	<!-- 创建线索的模态窗口 -->
 	<div class="modal fade" id="createClueModal" role="dialog">
@@ -39,15 +376,15 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 					<h4 class="modal-title" id="myModalLabel">创建线索</h4>
 				</div>
 				<div class="modal-body">
-					<form class="form-horizontal" role="form">
+					<form id="clueAddForm" class="form-horizontal" role="form">
 					
 						<div class="form-group">
 							<label for="create-clueOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-clueOwner">
-								  <option>zhangsan</option>
+								<select class="form-control" id="create-owner">
+								  <%--<option>zhangsan</option>
 								  <option>lisi</option>
-								  <option>wangwu</option>
+								  <option>wangwu</option>--%>
 								</select>
 							</div>
 							<label for="create-company" class="col-sm-2 control-label">公司<span style="font-size: 15px; color: red;">*</span></label>
@@ -59,7 +396,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						<div class="form-group">
 							<label for="create-call" class="col-sm-2 control-label">称呼</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-call">
+								<select class="form-control" id="create-appellation">
 								  <option></option>
 								  <option>先生</option>
 								  <option>夫人</option>
@@ -70,7 +407,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							</div>
 							<label for="create-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-surname">
+								<input type="text" class="form-control" id="create-fullname">
 							</div>
 						</div>
 						
@@ -103,7 +440,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							</div>
 							<label for="create-status" class="col-sm-2 control-label">线索状态</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-status">
+								<select class="form-control" id="create-state">
 								  <option></option>
 								  <option>试图联系</option>
 								  <option>将来联系</option>
@@ -143,7 +480,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						<div class="form-group">
 							<label for="create-describe" class="col-sm-2 control-label">线索描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="create-describe"></textarea>
+								<textarea class="form-control" rows="3" id="create-description"></textarea>
 							</div>
 						</div>
 						
@@ -159,7 +496,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<div class="form-group">
 								<label for="create-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
 								<div class="col-sm-10" style="width: 300px;">
-									<input type="text" class="form-control" id="create-nextContactTime">
+									<input type="text" class="form-control time" id="create-nextContactTime" readonly>
 								</div>
 							</div>
 						</div>
@@ -179,7 +516,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+					<button type="button" id="saveBtn">保存</button>
 				</div>
 			</div>
 		</div>
@@ -362,21 +699,21 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">名称</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="search-fullname">
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">公司</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="search-company">
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">公司座机</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="search-phone">
 				    </div>
 				  </div>
 				  
@@ -408,7 +745,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">所有者</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="search-owner">
 				    </div>
 				  </div>
 				  
@@ -417,7 +754,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">手机</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="search-mphone">
 				    </div>
 				  </div>
 				  
@@ -437,15 +774,15 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				    </div>
 				  </div>
 
-				  <button type="submit" class="btn btn-default">查询</button>
+				  <button type="submit" id="searchBtn" class="btn btn-default">查询</button>
 				  
 				</form>
 			</div>
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 40px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
-				  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createClueModal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editClueModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button type="button" class="btn btn-primary" id="addBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
+				  <button type="button" class="btn btn-default" id="editBtn"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button type="button" class="btn btn-danger" id="deleteBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				
 				
@@ -464,8 +801,8 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<td>线索状态</td>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
+					<tbody id="clueBody">
+						<%--<tr>
 							<td><input type="checkbox" /></td>
 							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='workbench/clue/detail.jsp';">李四先生</a></td>
 							<td>动力节点</td>
@@ -484,44 +821,13 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
                             <td>广告</td>
                             <td>zhangsan</td>
                             <td>已联系</td>
-                        </tr>
+                        </tr>--%>
 					</tbody>
 				</table>
 			</div>
 			
 			<div style="height: 50px; position: relative;top: 60px;">
-				<div>
-					<button type="button" class="btn btn-default" style="cursor: default;">共<b>50</b>条记录</button>
-				</div>
-				<div class="btn-group" style="position: relative;top: -34px; left: 110px;">
-					<button type="button" class="btn btn-default" style="cursor: default;">显示</button>
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							10
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#">20</a></li>
-							<li><a href="#">30</a></li>
-						</ul>
-					</div>
-					<button type="button" class="btn btn-default" style="cursor: default;">条/页</button>
-				</div>
-				<div style="position: relative;top: -88px; left: 285px;">
-					<nav>
-						<ul class="pagination">
-							<li class="disabled"><a href="#">首页</a></li>
-							<li class="disabled"><a href="#">上一页</a></li>
-							<li class="active"><a href="#">1</a></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
-							<li><a href="#">5</a></li>
-							<li><a href="#">下一页</a></li>
-							<li class="disabled"><a href="#">末页</a></li>
-						</ul>
-					</nav>
-				</div>
+				<div id="activityPage"></div>
 			</div>
 			
 		</div>

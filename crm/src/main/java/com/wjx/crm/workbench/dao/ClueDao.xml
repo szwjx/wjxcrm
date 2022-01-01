@@ -5,7 +5,128 @@
 
 <mapper namespace="com.wjx.crm.workbench.dao.ClueDao">
 	
-	
+	<select id="getTotalByCondition" resultType="int">
+
+        select count(*)
+
+        from tbl_clue c
+        join tbl_user u
+        on c.owner = u.id
+
+        <where>
+            <if test="fullname!=null and fullname!=''">
+                c.fullname like '%' #{fullname} '%'
+            </if>
+            <if test="owner!=null and owner!=''">
+                and u.name like '%' #{owner} '%'
+            </if>
+            <if test="company!=null and company!=''">
+                and c.company like '%' #{company} '%'
+            </if>
+            <if test="mphone!=null and mphone!=''">
+                and c.mphone like '%' #{mphone} '%'
+            </if>
+            <if test="phone!=null and phone!=''">
+                and c.phone like '%' #{phone} '%'
+            </if>
+            <if test="state!=null and state!=''">
+                and c.state like '%' #{state} '%'
+            </if>
+            <if test="source!=null and source!=''">
+                and c.source like '%' #{source} '%'
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getClueByCondition" resultType="Clue">
+        select
+        c.id,
+        c.fullname,
+        c.appellation,
+        u.name as owner,
+        c.company,
+        c.mphone,
+        c.phone,
+        c.state,
+        c.source
+
+
+        from tbl_clue c
+        join tbl_user u
+        on c.owner = u.id
+
+        <where>
+            <if test="fullname!=null and fullname!=''">
+                c.fullname like '%' #{fullname} '%'
+            </if>
+            <if test="owner!=null and owner!=''">
+                and u.name like '%' #{owner} '%'
+            </if>
+            <if test="company!=null and company!=''">
+                and c.company like '%' #{company} '%'
+            </if>
+            <if test="mphone!=null and mphone!=''">
+                and c.mphone like '%' #{mphone} '%'
+            </if>
+            <if test="phone!=null and phone!=''">
+                and c.phone like '%' #{phone} '%'
+            </if>
+            <if test="state!=null and state!=''">
+                and c.state like '%' #{state} '%'
+            </if>
+            <if test="source!=null and source!=''">
+                and c.source like '%' #{source} '%'
+            </if>
+        </where>
+        order by c.createTime desc
+        limit #{skipCount},#{pageSize}
+    </select>
+
+    <insert id="save">
+        insert into tbl_clue(
+            id,
+            fullname,
+            appellation,
+            owner,
+            company,
+            job,
+            email,
+            phone,
+            website,
+            mphone,
+            state,
+            source,
+            createBy,
+            createTime,
+            description,
+            contactSummary,
+            nextContactTime,
+            address
+
+        )
+
+        values (
+               #{id},
+               #{fullname},
+               #{appellation},
+               #{owner},
+               #{company},
+               #{job},
+               #{email},
+               #{phone},
+               #{website},
+               #{mphone},
+               #{state},
+               #{source},
+               #{createBy},
+               #{createTime},
+               #{description},
+               #{contactSummary},
+               #{nextContactTime},
+               #{address}
+        )
+    </insert>
   	
 </mapper>
 
