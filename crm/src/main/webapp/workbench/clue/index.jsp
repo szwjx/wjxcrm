@@ -120,76 +120,15 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 						//添加成功后
 						//刷新市场活动信息列表（局部刷新）
-						//pageList(1,2);
-						/*
-                            *
-                            * $("#activityPage").bs_pagination('getOption', 'currentPage'):
-                            * 		操作后停留在当前页
-                            *
-                            * $("#activityPage").bs_pagination('getOption', 'rowsPerPage')
-                            * 		操作后维持已经设置好的每页展现的记录数
-                            *
-                            * 这两个参数不需要我们进行任何的修改操作
-                            * 	直接使用即可
-                            *
-                            *
-                            *
-                            * */
-
 						//做完添加操作后，应该回到第一页，维持每页展现的记录数
 
 						pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
 
-						/*
-                        *
-                        * $("#activityPage").bs_pagination('getOption', 'currentPage'):
-                        * 		操作后停留在当前页
-                        *
-                        * $("#activityPage").bs_pagination('getOption', 'rowsPerPage')
-                        * 		操作后维持已经设置好的每页展现的记录数
-                        *
-                        * 这两个参数不需要我们进行任何的修改操作
-                        * 	直接使用即可
-                        *
-                        *
-                        *
-                        * */
 
-						//做完添加操作后，应该回到第一页，维持每页展现的记录数
-
-						//pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
-
-
-
-						//清空添加操作模态窗口中的数据
-						//提交表单
-						//$("#activityAddForm").submit();
-
-						/*
-
-                            注意：
-                                我们拿到了form表单的jquery对象
-                                对于表单的jquery对象，提供了submit()方法让我们提交表单
-                                但是表单的jquery对象，没有为我们提供reset()方法让我们重置表单（坑：idea为我们提示了有reset()方法）
-
-                                虽然jquery对象没有为我们提供reset方法，但是原生js为我们提供了reset方法
-                                所以我们要将jquery对象转换为原生dom对象
-
-                                jquery对象转换为dom对象：
-                                    jquery对象[下标]
-
-                                dom对象转换为jquery对象：
-                                    $(dom)
-
-
-                         */
 						$("#clueAddForm")[0].reset();
 
 						//关闭添加操作的模态窗口
 						$("#createClueModal").modal("hide");
-
-
-
 
 					}else{
 
@@ -204,6 +143,34 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		//页面加载完毕后触发一个方法
 		//默认展开列表第一页，每页展现两条记录
 		pageList(1,2);
+
+		//为全选的复选框绑定事件，触发全选操作
+		$("#qx").click(function () {
+
+			$("input[name=xz]").prop("checked",this.checked)
+
+		})
+		//为普通选框狂绑定事件
+		//但以下操作不可以
+		/*$("input[name=xz]").click(function () {
+
+			alert(111)
+
+		})*/
+		//因为动态生成的元素不能以普通绑定事件形式进行操作
+		/*
+
+			动态生成的元素，我们要以on方法的形式来触发事件
+
+			语法：
+				$(需要绑定元素的有效的外层元素).on(绑定事件的方式,需要绑定的元素的jquery对象,回调函数)
+
+		 */
+		$("#clueBody").on("click",$("input[name=xz]"),function () {
+
+			$("#qx").prop("checked",$("input[name=xz]").length==$("input[name=xz]:checked").length);
+
+		})
 
 		//为删除按钮绑定事件，执行市场活动删除操作
 		$("#deleteBtn").click(function () {
@@ -257,6 +224,135 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			}
 
 		})
+
+		//为修改按钮绑定事件，执行修改市场活动操作
+		$("#editBtn").click(function () {
+
+			//先获取要修改的是哪一条记录
+			var $xz = $("input[name=xz]:checked");
+
+			if ($xz.length==0){
+				alert("请选择要修改的市场活动")
+			}else if($xz.length>1){
+				alert("只能选择一条记录进行修改")
+				//肯定只选择了一条
+			}else {
+				var id = $xz.val();
+
+				//走后台，获取用户信息列表和市场活动对象，为修改模态窗口内各项赋值
+
+				$.ajax({
+					url : "workbench/clue/getUserListAndClue.do",
+					data : {
+
+						"id":id
+					},
+					type : "get",
+					dataType : "json",
+					success : function (data) {
+
+						/*
+						data
+						用户列表
+						市场活动对象
+
+						{"uList":[{用户1}，{用户2}]，"activity":{市场活动}}
+					*/
+						//处理所有者下拉框
+						var html = "<option><?option>";
+
+						$.each(data.uList,function (i,n) {
+
+							html += "<option value='"+n.id+"'>"+n.name+"</option>";
+
+						})
+						$("#edit-owner").html(html);
+
+						//处理单条clue
+						$("#edit-id").val(data.c.id);
+						$("#edit-owner").val(data.c.owner);
+						$("#edit-appellation").val(data.c.appellation);
+						$("#edit-company").val(data.c.company);
+						$("#edit-fullname").val(data.c.fullname);
+						$("#edit-job").val(data.c.job);
+						$("#edit-email").val(data.c.email);
+						$("#edit-website").val(data.c.website);
+						$("#edit-phone").val(data.c.phone);
+						$("#edit-mphone").val(data.c.mphone);
+						$("#edit-state").val(data.c.state);
+						$("#edit-source").val(data.c.source);
+						$("#edit-description").val(data.c.description);
+						$("#edit-contactSummary").val(data.c.contactSummary);
+						$("#edit-nextContactTime").val(data.c.nextContactTime);
+						$("#edit-address").val(data.c.address);
+
+						//所有值都填写好后就可以打开修改市场活动的模态窗口
+						$("#editClueModal").modal("show");
+					}
+				})
+			}
+		})
+
+		//为更新按钮绑定事件，执行市场活动的修改操作
+		$("#updateBtn").click(function () {
+
+			$.ajax({
+				url : "workbench/clue/update.do",
+				data : {
+					"id" : $.trim($("#edit-id").val()),
+					"owner" : $.trim($("#edit-owner").val()),
+					"company" : $.trim($("#edit-company").val()),
+					"appellation" : $.trim($("#edit-appellation").val()),
+					"fullname" : $.trim($("#edit-fullname").val()),
+					"job" : $.trim($("#edit-job").val()),
+					"email" : $.trim($("#edit-email").val()),
+					"phone" : $.trim($("#edit-phone").val()),
+					"mphone" : $.trim($("#edit-mphone").val()),
+					"website" : $.trim($("#edit-website").val()),
+					"state" : $.trim($("#edit-state").val()),
+					"source" : $.trim($("#edit-source").val()),
+					"description" : $.trim($("#edit-description").val()),
+					"contactSummary" : $.trim($("#edit-contactSummary").val()),
+					"nextContactTime" : $.trim($("#edit-nextContactTime").val()),
+					"address" : $.trim($("#edit-address").val())
+				},
+				type : "post",
+				dataType : "json",
+				success : function (data) {
+
+					/*
+
+                        data
+                            {"success":true/false}
+
+                     */
+					if(data.success){
+
+						//修改成功后
+						//刷新市场活动信息列表（局部刷新）
+						//pageList(1,2);
+						/*
+
+							修改操作后，应该维持在当前页，维持每页展现的记录数
+
+						 */
+						pageList($("#activityPage").bs_pagination('getOption', 'currentPage')
+								,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+
+
+
+						//关闭修改操作的模态窗口
+						$("#editClueModal").modal("hide");
+					}else{
+
+						alert("修改市场活动失败");
+
+					}
+				}
+			})
+
+
+		})
 		
 		
 		
@@ -265,7 +361,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
     function pageList(pageNo,pageSize) {
 
         //重新刷新线索区域是将全选框取消勾选
-        //$("#qx").prop("checked",false);
+        $("#qx").prop("checked",false);
 
         //查询前，将隐藏域中的信息取出来，重新赋予到搜索框
         //$("#search-fullname").val($.trim($("#hidden-fullname").val())),
@@ -534,28 +630,28 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" role="form">
+
+						<input type="hidden" id="edit-id"/>
 					
 						<div class="form-group">
 							<label for="edit-clueOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="edit-clueOwner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
+								<select class="form-control" id="edit-owner">
+
 								</select>
 							</div>
 							<label for="edit-company" class="col-sm-2 control-label">公司<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-company" value="动力节点">
+								<input type="text" class="form-control" id="edit-company" >
 							</div>
 						</div>
 						
 						<div class="form-group">
 							<label for="edit-call" class="col-sm-2 control-label">称呼</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="edit-call">
+								<select class="form-control" id="edit-appellation">
 								  <option></option>
-								  <option selected>先生</option>
+								  <option>先生</option>
 								  <option>夫人</option>
 								  <option>女士</option>
 								  <option>博士</option>
@@ -564,44 +660,44 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							</div>
 							<label for="edit-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-surname" value="李四">
+								<input type="text" class="form-control" id="edit-fullname" v>
 							</div>
 						</div>
 						
 						<div class="form-group">
 							<label for="edit-job" class="col-sm-2 control-label">职位</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-job" value="CTO">
+								<input type="text" class="form-control" id="edit-job" >
 							</div>
 							<label for="edit-email" class="col-sm-2 control-label">邮箱</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-email" value="lisi@bjpowernode.com">
+								<input type="text" class="form-control" id="edit-email" >
 							</div>
 						</div>
 						
 						<div class="form-group">
 							<label for="edit-phone" class="col-sm-2 control-label">公司座机</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-phone" value="010-84846003">
+								<input type="text" class="form-control" id="edit-phone" >
 							</div>
 							<label for="edit-website" class="col-sm-2 control-label">公司网站</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-website" value="http://www.bjpowernode.com">
+								<input type="text" class="form-control" id="edit-website" >
 							</div>
 						</div>
 						
 						<div class="form-group">
 							<label for="edit-mphone" class="col-sm-2 control-label">手机</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-mphone" value="12345678901">
+								<input type="text" class="form-control" id="edit-mphone" >
 							</div>
 							<label for="edit-status" class="col-sm-2 control-label">线索状态</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="edit-status">
+								<select class="form-control" id="edit-state">
 								  <option></option>
 								  <option>试图联系</option>
 								  <option>将来联系</option>
-								  <option selected>已联系</option>
+								  <option>已联系</option>
 								  <option>虚假线索</option>
 								  <option>丢失线索</option>
 								  <option>未联系</option>
@@ -615,7 +711,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-source">
 								  <option></option>
-								  <option selected>广告</option>
+								  <option>广告</option>
 								  <option>推销电话</option>
 								  <option>员工介绍</option>
 								  <option>外部介绍</option>
@@ -636,7 +732,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						<div class="form-group">
 							<label for="edit-describe" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="edit-describe">这是一条线索的描述信息</textarea>
+								<textarea class="form-control" rows="3" id="edit-description"></textarea>
 							</div>
 						</div>
 						
@@ -646,13 +742,13 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<div class="form-group">
 								<label for="edit-contactSummary" class="col-sm-2 control-label">联系纪要</label>
 								<div class="col-sm-10" style="width: 81%;">
-									<textarea class="form-control" rows="3" id="edit-contactSummary">这个线索即将被转换</textarea>
+									<textarea class="form-control" rows="3" id="edit-contactSummary"></textarea>
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="edit-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
 								<div class="col-sm-10" style="width: 300px;">
-									<input type="text" class="form-control" id="edit-nextContactTime" value="2017-05-01">
+									<input type="text" class="form-control" id="edit-nextContactTime" >
 								</div>
 							</div>
 						</div>
@@ -663,7 +759,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
                             <div class="form-group">
                                 <label for="edit-address" class="col-sm-2 control-label">详细地址</label>
                                 <div class="col-sm-10" style="width: 81%;">
-                                    <textarea class="form-control" rows="1" id="edit-address">北京大兴区大族企业湾</textarea>
+                                    <textarea class="form-control" rows="1" id="edit-address"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -672,7 +768,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">更新</button>
+					<button type="button" class="btn btn-primary" id="updateBtn">更新</button>
 				</div>
 			</div>
 		</div>
@@ -791,7 +887,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				<table class="table table-hover">
 					<thead>
 						<tr style="color: #B3B3B3;">
-							<td><input type="checkbox" /></td>
+							<td><input type="checkbox" id="qx"/></td>
 							<td>名称</td>
 							<td>公司</td>
 							<td>公司座机</td>

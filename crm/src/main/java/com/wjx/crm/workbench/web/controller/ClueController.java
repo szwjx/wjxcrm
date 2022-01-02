@@ -9,6 +9,7 @@ import com.wjx.crm.utils.ServiceFactory;
 import com.wjx.crm.utils.UUIDUtil;
 import com.wjx.crm.vo.PaginationVO;
 import com.wjx.crm.workbench.domain.Clue;
+import com.wjx.crm.workbench.domain.ClueRemark;
 import com.wjx.crm.workbench.service.ClueService;
 import com.wjx.crm.workbench.service.impl.ClueServiceImpl;
 
@@ -37,11 +38,132 @@ public class ClueController extends HttpServlet {
         } else if ("/workbench/clue/pageList.do".equals(path)) {
             pageList(request, response);
         }else if ("/workbench/clue/delete.do".equals(path)) {
-            //delete(request, response);
+            delete(request, response);
+        }else if ("/workbench/clue/getUserListAndClue.do".equals(path)) {
+            getUserListAndClue(request, response);
+        }else if ("/workbench/clue/update.do".equals(path)) {
+            update(request, response);
+        }else if ("/workbench/clue/detail.do".equals(path)) {
+            detail(request, response);
+        }else if ("/workbench/clue/getRemarkListByCid.do".equals(path)) {
+            getRemarkListByCid(request, response);
+        }else if ("/workbench/clue/deleteRemark.do".equals(path)) {
+            deleteRemark(request, response);
         }
     }
 
-/*
+    private void deleteRemark(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("删除备注操作");
+
+        String id = request.getParameter("id");
+
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        boolean flag = cs.deleteRemark(id);
+
+        PrintJson.printJsonFlag(response,flag);
+    }
+
+    private void getRemarkListByCid(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("根据线索id，取得备注信息列表");
+
+        String clueId = request.getParameter("clueId");
+
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        List<ClueRemark> cList = cs.getRemarkListByCid(clueId);
+
+        PrintJson.printJsonObj(response,cList);
+    }
+
+    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("进入到跳转到详细信息页操作");
+
+        String id = request.getParameter("id");
+
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        Clue c = cs.detail(id);
+
+        request.setAttribute("c",c);
+        //将a放进request域中，不能使用重定向，使用转发
+        request.getRequestDispatcher("/workbench/clue/detail.jsp").forward(request,response);
+    }
+
+    private void update(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("执行市场活动修改操作");
+
+        String id = request.getParameter("id");
+        String owner = request.getParameter("owner");
+        String fullname = request.getParameter("fullname");
+        String appellation = request.getParameter("appellation");
+        String company = request.getParameter("company");
+        String job = request.getParameter("job");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String website = request.getParameter("website");
+        String mphone = request.getParameter("mphone");
+        String state = request.getParameter("state");
+        String source = request.getParameter("source");
+        String description = request.getParameter("description");
+        String contactSummary = request.getParameter("contactSummary");
+        String nextContactTime = request.getParameter("nextContactTime");
+        String address = request.getParameter("address");
+
+        //修改时间，当前系统时间
+        String editTime = DateTimeUtil.getSysTime();
+        //修改人，当前登录用户
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+
+        Clue c = new Clue();
+        c.setId(id);
+        c.setOwner(owner);
+        c.setFullname(fullname);
+        c.setAppellation(appellation);
+        c.setCompany(company);
+        c.setJob(job);
+        c.setEmail(email);
+        c.setWebsite(website);
+        c.setPhone(phone);
+        c.setMphone(mphone);
+        c.setState(state);
+        c.setSource(source);
+        c.setDescription(description);
+        c.setContactSummary(contactSummary);
+        c.setNextContactTime(nextContactTime);
+        c.setAddress(address);
+
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        boolean flag = cs.update(c);
+
+        PrintJson.printJsonFlag(response,flag);
+    }
+
+    private void getUserListAndClue(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("进入到查询用户信息列表和根据线索id查询单条记录的操作");
+
+        String id = request.getParameter("id");
+
+        /*
+            调用业务层获得一个前端需要的uList和clue （用c代替）对象
+         */
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        /*
+            uList
+            c
+
+            同时获得这两个值复用性不高不用vo,用map
+         */
+        Map<String,Object> map = cs.getUserListAndClue(id);
+
+        PrintJson.printJsonObj(response,map);
+    }
+
     private void delete(HttpServletRequest request, HttpServletResponse response) {
         System.out.println("执行删除线索");
 
@@ -54,8 +176,6 @@ public class ClueController extends HttpServlet {
 
         PrintJson.printJsonFlag(response,flag);
     }
-*/
-
 
     private void pageList(HttpServletRequest request, HttpServletResponse response) {
 

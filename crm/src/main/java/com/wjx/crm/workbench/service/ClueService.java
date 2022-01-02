@@ -2,7 +2,9 @@ package com.wjx.crm.workbench.service;
 
 import com.wjx.crm.vo.PaginationVO;
 import com.wjx.crm.workbench.domain.Clue;
+import com.wjx.crm.workbench.domain.ClueRemark;
 
+import java.util.List;
 import java.util.Map;
 
 public interface ClueService {
@@ -11,5 +13,15 @@ public interface ClueService {
 
     boolean save(Clue c);
 
-   // boolean delete(String[] ids);
+    boolean delete(String[] ids);
+
+    Map<String, Object> getUserListAndClue(String id);
+
+    boolean update(Clue c);
+
+    Clue detail(String id);
+
+    List<ClueRemark> getRemarkListByCid(String clueId);
+
+    boolean deleteRemark(String id);
 }

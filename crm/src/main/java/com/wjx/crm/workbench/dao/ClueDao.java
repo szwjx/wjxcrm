@@ -1,5 +1,6 @@
 package com.wjx.crm.workbench.dao;
 
+import com.wjx.crm.workbench.domain.Activity;
 import com.wjx.crm.workbench.domain.Clue;
 
 import java.util.List;
@@ -13,4 +14,12 @@ public interface ClueDao {
     int getTotalByCondition(Map<String, Object> map);
 
     int save(Clue c);
+
+    int delete(String[] ids);
+
+    Clue getById(String id);
+
+    int update(Clue c);
+
+    Clue detail(String id);
 }

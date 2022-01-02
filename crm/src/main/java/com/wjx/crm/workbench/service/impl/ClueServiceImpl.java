@@ -1,13 +1,16 @@
 package com.wjx.crm.workbench.service.impl;
 
+import com.wjx.crm.settings.dao.UserDao;
+import com.wjx.crm.settings.domain.User;
 import com.wjx.crm.utils.SqlSessionUtil;
 import com.wjx.crm.vo.PaginationVO;
 import com.wjx.crm.workbench.dao.ClueDao;
 import com.wjx.crm.workbench.dao.ClueRemarkDao;
-import com.wjx.crm.workbench.domain.Activity;
 import com.wjx.crm.workbench.domain.Clue;
+import com.wjx.crm.workbench.domain.ClueRemark;
 import com.wjx.crm.workbench.service.ClueService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +18,7 @@ public class ClueServiceImpl implements ClueService {
 
     private ClueDao clueDao = SqlSessionUtil.getSqlSession().getMapper(ClueDao.class);
     private ClueRemarkDao clueRemarkDao = SqlSessionUtil.getSqlSession().getMapper(ClueRemarkDao.class);
+    private UserDao userDao = SqlSessionUtil.getSqlSession().getMapper(UserDao.class);
 
     @Override
     public PaginationVO<Clue> pageList(Map<String, Object> map) {
@@ -46,15 +50,15 @@ public class ClueServiceImpl implements ClueService {
         return flag;
     }
 
-    /*@Override
+    @Override
     public boolean delete(String[] ids) {
         boolean flag = true;
 
         //查询出需要删除的备注的数量
-        int count1 = clueRemarkDao.getCountByAids(ids);
+        int count1 = clueRemarkDao.getCountByCids(ids);
 
         //删除备注，返回受影响的条数（实际删除的数量）
-        int count2 = clueRemarkDao.deleteByAids(ids);
+        int count2 = clueRemarkDao.deleteByCids(ids);
 
         if (count1!=count2){
             flag = false;
@@ -67,5 +71,64 @@ public class ClueServiceImpl implements ClueService {
         }
 
         return flag;
-    }*/
+    }
+
+    @Override
+    public Map<String, Object> getUserListAndClue(String id) {
+        //取uList
+        List<User> uList = userDao.getUserList();
+        //取c
+        Clue c = clueDao.getById(id);
+
+        //将uList和a打包到map中
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("uList",uList);
+        map.put("c",c);
+
+        //返回map集合
+        return map;
+    }
+
+    @Override
+    public boolean update(Clue c) {
+        boolean flag = true;
+
+        int count = clueDao.update(c);
+
+        if (count!=1){
+            flag=false;
+        }
+
+        return flag;
+    }
+
+    @Override
+    public Clue detail(String id) {
+
+        Clue c = clueDao.detail(id);
+
+        return c;
+    }
+
+    @Override
+    public List<ClueRemark> getRemarkListByCid(String clueId) {
+
+        List<ClueRemark> cList = clueRemarkDao.getRemarkListByCid(clueId);
+
+        return cList;
+    }
+
+    @Override
+    public boolean deleteRemark(String id) {
+
+        boolean flag = true;
+
+        int count = clueRemarkDao.deleteRemark(id);
+
+        if (count!=1){
+            flag = false;
+        }
+
+        return flag;
+    }
 }
