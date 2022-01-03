@@ -24,4 +24,8 @@ public interface ClueService {
     List<ClueRemark> getRemarkListByCid(String clueId);
 
     boolean deleteRemark(String id);
+
+    boolean saveRemark(ClueRemark cl);
+
+    boolean updateRemark(ClueRemark cl);
 }

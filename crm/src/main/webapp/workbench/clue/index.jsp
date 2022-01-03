@@ -144,6 +144,25 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		//默认展开列表第一页，每页展现两条记录
 		pageList(1,2);
 
+		//为查询按钮绑定事件，出发pageList方法
+		$("#searchBtn").click(function () {
+			/*
+			* 点击查询按钮时，应该将搜索框中的信息保存起来，保存到隐藏域中
+			* */
+			$("#hidden-fullname").val($.trim($("#search-fullname").val())),
+			$("#hidden-owner").val($.trim($("#search-owner").val())),
+			$("#hidden-company").val($.trim($("#search-company").val())),
+			$("#hidden-mphone").val($.trim($("#search-mphone").val())),
+			$("#hidden-phone").val($.trim($("#search-phone").val())),
+			$("#hidden-state").val($.trim($("#search-state").val())),
+			$("#hidden-source").val($.trim($("#search-source").val())),
+
+			pageList(1 ,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+		});
+
+
+	})
+
 		//为全选的复选框绑定事件，触发全选操作
 		$("#qx").click(function () {
 
@@ -293,7 +312,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			}
 		})
 
-		//为更新按钮绑定事件，执行市场活动的修改操作
+		//为更新按钮绑定事件，执行线索的修改操作
 		$("#updateBtn").click(function () {
 
 			$.ajax({
@@ -364,13 +383,14 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
         $("#qx").prop("checked",false);
 
         //查询前，将隐藏域中的信息取出来，重新赋予到搜索框
-        //$("#search-fullname").val($.trim($("#hidden-fullname").val())),
-        //$("#search-owner").val($.trim($("#hidden-owner").val())),
-        //$("#search-company").val($.trim($("#hidden-company").val())),
-        //$("#search-mphone").val($.trim($("#hidden-mphone").val())),
-		//$("#search-phone").val($.trim($("#hidden-phone").val())),
-		//$("#search-state").val($.trim($("#hidden-state").val())),
-		//$("#search-source").val($.trim($("#hidden-source").val())),
+        $("#search-fullname").val($.trim($("#hidden-fullname").val())),
+		//$("#search-appellation").val($.trim($("#hidden-appellation").val())),
+		$("#search-owner").val($.trim($("#hidden-owner").val())),
+        $("#search-company").val($.trim($("#hidden-company").val())),
+        $("#search-mphone").val($.trim($("#hidden-mphone").val())),
+		$("#search-phone").val($.trim($("#hidden-phone").val())),
+		$("#search-state").val($.trim($("#hidden-state").val())),
+		$("#search-source").val($.trim($("#hidden-source").val())),
 
             $.ajax({
                 url : "workbench/clue/pageList.do",
@@ -453,7 +473,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 <body>
 
     <input type="hidden" id="hidden-fullname" />
-	<input type="hidden" id="hidden-appellation" />
+<%--	<input type="hidden" id="hidden-appellation" />--%>
 	<input type="hidden" id="hidden-company" />
 	<input type="hidden" id="hidden-phone" />
     <input type="hidden" id="hidden-mphone" />
@@ -816,7 +836,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">线索来源</div>
-					  <select class="form-control">
+					  <select class="form-control" id="search-source">
 					  	  <option></option>
 					  	  <option>广告</option>
 						  <option>推销电话</option>
@@ -857,7 +877,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">线索状态</div>
-					  <select class="form-control">
+					  <select class="form-control" id="search-state">
 					  	<option></option>
 					  	<option>试图联系</option>
 					  	<option>将来联系</option>
@@ -870,7 +890,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				    </div>
 				  </div>
 
-				  <button type="submit" id="searchBtn" class="btn btn-default">查询</button>
+				  <button type="button" id="searchBtn" class="btn btn-default">查询</button>
 				  
 				</form>
 			</div>

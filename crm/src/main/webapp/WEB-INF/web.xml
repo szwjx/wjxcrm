@@ -67,5 +67,7 @@
         <url-pattern>/workbench/clue/detail.do</url-pattern>
         <url-pattern>/workbench/clue/getRemarkListByCid.do</url-pattern>
         <url-pattern>/workbench/clue/deleteRemark.do</url-pattern>
+        <url-pattern>/workbench/clue/saveRemark.do</url-pattern>
+        <url-pattern>/workbench/clue/updateRemark.do</url-pattern>
     </servlet-mapping>
 </web-app>

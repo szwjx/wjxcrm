@@ -131,4 +131,36 @@ public class ClueServiceImpl implements ClueService {
 
         return flag;
     }
+
+    @Override
+    public boolean saveRemark(ClueRemark cl) {
+
+        boolean flag = true;
+
+        int count = clueRemarkDao.saveRemark(cl);
+
+        if (count!=1){
+
+            flag=false;
+
+        }
+
+        return flag;
+    }
+
+    @Override
+    public boolean updateRemark(ClueRemark cl) {
+
+        boolean flag = true;
+
+        int count = clueRemarkDao.updateRemark(cl);
+
+        if (count!=1){
+
+            flag=false;
+
+        }
+
+        return flag;
+    }
 }

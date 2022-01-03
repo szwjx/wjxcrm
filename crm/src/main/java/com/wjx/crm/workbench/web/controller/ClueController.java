@@ -49,7 +49,69 @@ public class ClueController extends HttpServlet {
             getRemarkListByCid(request, response);
         }else if ("/workbench/clue/deleteRemark.do".equals(path)) {
             deleteRemark(request, response);
+        }else if ("/workbench/clue/saveRemark.do".equals(path)) {
+            saveRemark(request, response);
+        }else if ("/workbench/clue/updateRemark.do".equals(path)) {
+            updateRemark(request, response);
         }
+    }
+
+    private void updateRemark(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("执行修改备注的操作");
+
+        String id = request.getParameter("id");
+        String noteContent = request.getParameter("noteContent");
+        String editTime = DateTimeUtil.getSysTime();
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+        String editFlag = "1";
+
+        ClueRemark cl = new ClueRemark();
+        cl.setId(id);
+        cl.setNoteContent(noteContent);
+        cl.setEditTime(editTime);
+        cl.setEditBy(editBy);
+        cl.setEditFlag(editFlag);
+
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        boolean flag = cs.updateRemark(cl);
+
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("success",flag);
+        map.put("cl",cl);
+
+        PrintJson.printJsonObj(response,map);
+    }
+
+    private void saveRemark(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("执行添加备注操作");
+
+        String noteContent = request.getParameter("noteContent");
+        String clueId = request.getParameter("clueId");
+        String id =  UUIDUtil.getUUID();
+        String createTime = DateTimeUtil.getSysTime();
+        String createBy = ((User)request.getSession().getAttribute("user")).getName();
+        String editFlag = "0";
+
+        ClueRemark cl = new ClueRemark();
+        cl.setId(id);
+        cl.setClueId(clueId);
+        cl.setNoteContent(noteContent);
+        cl.setCreateTime(createTime);
+        cl.setCreateBy(createBy);
+        cl.setEditFlag(editFlag);
+
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        boolean flag = cs.saveRemark(cl);
+
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("success",flag);
+        map.put("cl",cl);
+
+        PrintJson.printJsonObj(response,map);
     }
 
     private void deleteRemark(HttpServletRequest request, HttpServletResponse response) {
@@ -135,6 +197,8 @@ public class ClueController extends HttpServlet {
         c.setContactSummary(contactSummary);
         c.setNextContactTime(nextContactTime);
         c.setAddress(address);
+        c.setEditTime(editTime);
+        c.setEditBy(editBy);
 
         ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
 

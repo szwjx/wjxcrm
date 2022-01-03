@@ -13,4 +13,8 @@ public interface ClueRemarkDao {
     List<ClueRemark> getRemarkListByCid(String clueId);
 
     int deleteRemark(String id);
+
+    int saveRemark(ClueRemark cl);
+
+    int updateRemark(ClueRemark cl);
 }

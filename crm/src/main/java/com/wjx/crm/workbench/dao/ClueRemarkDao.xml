@@ -5,6 +5,35 @@
 
 <mapper namespace="com.wjx.crm.workbench.dao.ClueRemarkDao">
 
+    <update id="updateRemark">
+        update tbl_clue_remark set noteContent=#{noteContent},editBy=#{editBy},editTime=#{editTime},editFlag=#{editFlag}
+
+        where id=#{id}
+    </update>
+
+    <insert id="saveRemark">
+        insert into tbl_clue_remark(
+
+            id,
+            noteContent,
+            createTime,
+            createBy,
+            editFlag,
+            clueId
+
+        )
+
+        values (
+
+                   #{id},
+                   #{noteContent},
+                   #{createTime},
+                   #{createBy},
+                   #{editFlag},
+                   #{clueId}
+               )
+    </insert>
+
     <delete id="deleteRemark">
         delete from tbl_clue_remark where id=#{id}
     </delete>
