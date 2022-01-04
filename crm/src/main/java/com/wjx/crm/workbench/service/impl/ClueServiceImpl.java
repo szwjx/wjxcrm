@@ -4,9 +4,11 @@ import com.wjx.crm.settings.dao.UserDao;
 import com.wjx.crm.settings.domain.User;
 import com.wjx.crm.utils.SqlSessionUtil;
 import com.wjx.crm.vo.PaginationVO;
+import com.wjx.crm.workbench.dao.ClueActivityRelationDao;
 import com.wjx.crm.workbench.dao.ClueDao;
 import com.wjx.crm.workbench.dao.ClueRemarkDao;
 import com.wjx.crm.workbench.domain.Clue;
+import com.wjx.crm.workbench.domain.ClueActivityRelation;
 import com.wjx.crm.workbench.domain.ClueRemark;
 import com.wjx.crm.workbench.service.ClueService;
 
@@ -17,6 +19,7 @@ import java.util.Map;
 public class ClueServiceImpl implements ClueService {
 
     private ClueDao clueDao = SqlSessionUtil.getSqlSession().getMapper(ClueDao.class);
+    private ClueActivityRelationDao clueActivityRelationDao = SqlSessionUtil.getSqlSession().getMapper(ClueActivityRelationDao.class);
     private ClueRemarkDao clueRemarkDao = SqlSessionUtil.getSqlSession().getMapper(ClueRemarkDao.class);
     private UserDao userDao = SqlSessionUtil.getSqlSession().getMapper(UserDao.class);
 
@@ -159,6 +162,21 @@ public class ClueServiceImpl implements ClueService {
 
             flag=false;
 
+        }
+
+        return flag;
+    }
+
+    @Override
+    public boolean unbund(String id) {
+
+        boolean flag = true;
+
+        int count = clueActivityRelationDao.unbund(id);
+
+        if (count!=1){
+
+            flag = false;
         }
 
         return flag;

@@ -293,6 +293,15 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		//为修改按钮绑定事件，执行修改市场活动操作
 		$("#editBtn").click(function () {
 
+			$(".time").datetimepicker({
+				minView: "month",
+				language:  'zh-CN',
+				format: 'yyyy-mm-dd',
+				autoclose: true,
+				todayBtn: true,
+				pickerPosition: "bottom-left"
+			});
+
 			//先获取要修改的是哪一条记录
 			var $xz = $("input[name=xz]:checked");
 

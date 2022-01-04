@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
 String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 	request.getServerPort() + request.getContextPath() + "/";
 %>
@@ -33,7 +34,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				format: 'yyyy-mm-dd',
 				autoclose: true,
 				todayBtn: true,
-				pickerPosition: "bottom-left"
+				pickerPosition: "top-left"
 			});
 			/*
 
@@ -78,6 +79,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 					var id = "${user.id}";
 
 					$("#create-owner").val(id);
+
 					//当所有者下拉框处理完毕后，展现模态窗口
 					$("#createClueModal").modal("show");
 				}
@@ -159,9 +161,6 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 			pageList(1 ,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
 		});
-
-
-	})
 
 		//为全选的复选框绑定事件，触发全选操作
 		$("#qx").click(function () {
@@ -246,6 +245,15 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 		//为修改按钮绑定事件，执行修改市场活动操作
 		$("#editBtn").click(function () {
+
+			$(".time").datetimepicker({
+				minView: "month",
+				language:  'zh-CN',
+				format: 'yyyy-mm-dd',
+				autoclose: true,
+				todayBtn: true,
+				pickerPosition: "top-left"
+			});
 
 			//先获取要修改的是哪一条记录
 			var $xz = $("input[name=xz]:checked");
@@ -372,10 +380,10 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 
 		})
-		
-		
-		
+
+
 	});
+
 
     function pageList(pageNo,pageSize) {
 
@@ -498,9 +506,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<label for="create-clueOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="create-owner">
-								  <%--<option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>--%>
+
 								</select>
 							</div>
 							<label for="create-company" class="col-sm-2 control-label">公司<span style="font-size: 15px; color: red;">*</span></label>
@@ -514,11 +520,14 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="create-appellation">
 								  <option></option>
-								  <option>先生</option>
+									<c:forEach items="${appellationList}" var="a">
+										<option value="${a.value}">${a.text}</option>
+									</c:forEach>
+								  <%--<option>先生</option>
 								  <option>夫人</option>
 								  <option>女士</option>
 								  <option>博士</option>
-								  <option>教授</option>
+								  <option>教授</option>--%>
 								</select>
 							</div>
 							<label for="create-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
@@ -558,13 +567,16 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="create-state">
 								  <option></option>
-								  <option>试图联系</option>
+                                    <c:forEach items="${clueStateList}" var="c">
+                                        <option value="${c.value}">${c.text}</option>
+                                    </c:forEach>
+								  <%--<option>试图联系</option>
 								  <option>将来联系</option>
 								  <option>已联系</option>
 								  <option>虚假线索</option>
 								  <option>丢失线索</option>
 								  <option>未联系</option>
-								  <option>需要条件</option>
+								  <option>需要条件</option>--%>
 								</select>
 							</div>
 						</div>
@@ -574,7 +586,10 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="create-source">
 								  <option></option>
-								  <option>广告</option>
+                                    <c:forEach items="${sourceList}" var="s">
+                                        <option value="${s.value}">${s.text}</option>
+                                    </c:forEach>
+								  <%--<option>广告</option>
 								  <option>推销电话</option>
 								  <option>员工介绍</option>
 								  <option>外部介绍</option>
@@ -587,7 +602,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 								  <option>交易会</option>
 								  <option>web下载</option>
 								  <option>web调研</option>
-								  <option>聊天</option>
+								  <option>聊天</option>--%>
 								</select>
 							</div>
 						</div>
@@ -768,7 +783,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<div class="form-group">
 								<label for="edit-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
 								<div class="col-sm-10" style="width: 300px;">
-									<input type="text" class="form-control" id="edit-nextContactTime" >
+									<input type="text" class="form-control time" id="edit-nextContactTime" readonly >
 								</div>
 							</div>
 						</div>

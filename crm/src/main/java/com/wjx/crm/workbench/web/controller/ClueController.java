@@ -8,9 +8,12 @@ import com.wjx.crm.utils.PrintJson;
 import com.wjx.crm.utils.ServiceFactory;
 import com.wjx.crm.utils.UUIDUtil;
 import com.wjx.crm.vo.PaginationVO;
+import com.wjx.crm.workbench.domain.Activity;
 import com.wjx.crm.workbench.domain.Clue;
 import com.wjx.crm.workbench.domain.ClueRemark;
+import com.wjx.crm.workbench.service.ActivityService;
 import com.wjx.crm.workbench.service.ClueService;
+import com.wjx.crm.workbench.service.impl.ActivityServiceImpl;
 import com.wjx.crm.workbench.service.impl.ClueServiceImpl;
 
 import javax.servlet.ServletException;
@@ -45,6 +48,8 @@ public class ClueController extends HttpServlet {
             update(request, response);
         }else if ("/workbench/clue/detail.do".equals(path)) {
             detail(request, response);
+        }else if ("/workbench/clue/getActivityListByClueId.do".equals(path)) {
+            getActivityListByClueId(request, response);
         }else if ("/workbench/clue/getRemarkListByCid.do".equals(path)) {
             getRemarkListByCid(request, response);
         }else if ("/workbench/clue/deleteRemark.do".equals(path)) {
@@ -53,8 +58,24 @@ public class ClueController extends HttpServlet {
             saveRemark(request, response);
         }else if ("/workbench/clue/updateRemark.do".equals(path)) {
             updateRemark(request, response);
+        }else if ("/workbench/clue/unbund.do".equals(path)) {
+            unbund(request, response);
         }
     }
+
+    private void unbund(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("根据id解除关联市场活动");
+
+        String id = request.getParameter("id");
+
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        boolean flag = cs.unbund(id);
+
+        PrintJson.printJsonFlag(response,flag);
+    }
+
 
     private void updateRemark(HttpServletRequest request, HttpServletResponse response) {
 
@@ -138,6 +159,20 @@ public class ClueController extends HttpServlet {
         List<ClueRemark> cList = cs.getRemarkListByCid(clueId);
 
         PrintJson.printJsonObj(response,cList);
+    }
+
+    private void getActivityListByClueId(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("根据线索Id查询关联的市场活动列表");
+
+        String clueId = request.getParameter("clueId");
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        List<Activity> aList = as.getActivityListByClueId(clueId);
+
+        PrintJson.printJsonObj(response,aList);
+
     }
 
     private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

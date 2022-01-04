@@ -9,9 +9,15 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 <meta charset="UTF-8">
 
 <link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+<link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
+
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
-
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
+	<link rel="stylesheet" type="text/css" href="jquery/bs_pagination/jquery.bs_pagination.min.css">
+	<script type="text/javascript" src="jquery/bs_pagination/jquery.bs_pagination.min.js"></script>
+	<script type="text/javascript" src="jquery/bs_pagination/en.js"></script>
 <script type="text/javascript">
 
 	//默认情况下取消和保存按钮是隐藏的
@@ -54,6 +60,9 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 		//页面加载完毕后，展现该线索关联的备注信息列表
 		showRemarkList();
+
+		//页面加载完毕后，取出关联的市场活动信息列表
+		showActivityList();
 
 		$("#remarkBody").on("mouseover",".remarkDiv",function(){
 			$(this).children("div").children("div").show();
@@ -174,6 +183,15 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		//为编辑按钮绑定事件
 		$("#editBtn").click(function () {
 
+			$(".time").datetimepicker({
+				minView: "month",
+				language:  'zh-CN',
+				format: 'yyyy-mm-dd',
+				autoclose: true,
+				todayBtn: true,
+				pickerPosition: "top-left"
+			});
+
 			//先获取要修改的是哪一条记录
 			//var id = $("#remarkId").val();
 
@@ -286,7 +304,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 		})
 
-		//为删除按钮绑定事件，执行市场活动删除操作
+		//为删除按钮绑定事件，执行线索删除操作
 		$("#deleteBtn").click(function () {
 
 			if (confirm("确认删除所选中的记录吗？")){
@@ -309,7 +327,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							//pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
 							window.location.href="workbench/clue/index.jsp"
 						}else {
-							alert("删除市场活动失败！")
+							alert("删除线索失败！")
 						}
 					}
 				})
@@ -321,6 +339,45 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 
 	});
+
+
+
+	function showActivityList() {
+
+		$.ajax({
+			url : "workbench/clue/getActivityListByClueId.do",
+			data : {
+
+				"clueId":"${c.id}"
+
+			},
+			type : "get",
+			dataType : "json",
+			success : function (data) {
+
+				/*
+					data
+						[{市场活动1}，{2}，{3}]
+				 */
+
+				var html = "";
+				$.each(data,function (i,n) {
+
+					html += '<tr>';
+					html += '<td>'+n.name+'</td>';
+					html += '<td>'+n.startDate+'</td>';
+					html += '<td>'+n.endDate+'</td>';
+					html += '<td>'+n.owner+'</td>';
+					html += '<td><a href="javascript:void(0);"  onclick="unbund(\''+n.id+'\')" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>';
+					html += '</tr>';
+				})
+
+				$("#activityBody").html(html);
+
+			}
+		})
+
+	}
 
 	function showRemarkList() {
 
@@ -373,6 +430,37 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			}
 
 		})
+	}
+
+	function unbund(id) {
+
+		$.ajax({
+			url : "workbench/clue/unbund.do",
+			data : {
+
+				"id":id
+
+			},
+			type : "post",
+			dataType : "json",
+			success : function (data) {
+
+				/*
+					data
+						{"success":true/false}
+				 */
+				if (data.success){
+
+					//刷新市场活动列表
+					showActivityList();
+
+				}else {
+					alert("解除关联失败")
+				}
+
+			}
+		})
+
 
 	}
 
@@ -659,7 +747,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
                             <div class="form-group">
                                 <label for="edit-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
                                 <div class="col-sm-10" style="width: 300px;">
-                                    <input type="text" class="form-control" id="edit-nextContactTime" readonly>
+                                    <input type="text" class="form-control time" id="edit-nextContactTime" readonly>
                                 </div>
                             </div>
                         </div>
@@ -837,8 +925,8 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<td></td>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
+					<tbody id="activityBody">
+						<%--<tr>
 							<td>发传单</td>
 							<td>2020-10-10</td>
 							<td>2020-10-20</td>
@@ -851,7 +939,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<td>2020-10-20</td>
 							<td>zhangsan</td>
 							<td><a href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
-						</tr>
+						</tr>--%>
 					</tbody>
 				</table>
 			</div>

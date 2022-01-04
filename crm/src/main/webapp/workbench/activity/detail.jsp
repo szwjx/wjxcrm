@@ -9,8 +9,15 @@
     <meta charset="UTF-8">
 
     <link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+    <link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
+
     <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
     <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
+        <link rel="stylesheet" type="text/css" href="jquery/bs_pagination/jquery.bs_pagination.min.css">
+        <script type="text/javascript" src="jquery/bs_pagination/jquery.bs_pagination.min.js"></script>
+        <script type="text/javascript" src="jquery/bs_pagination/en.js"></script>
 
     <script type="text/javascript">
 
@@ -175,6 +182,15 @@
 
             //为编辑按钮绑定事件
             $("#editBtn").click(function () {
+
+                $(".time").datetimepicker({
+                    minView: "month",
+                    language:  'zh-CN',
+                    format: 'yyyy-mm-dd',
+                    autoclose: true,
+                    todayBtn: true,
+                    pickerPosition: "bottom-left"
+                });
 
                 //先获取要修改的是哪一条记录
                 //var id = $("#remarkId").val();
@@ -487,11 +503,11 @@
                     <div class="form-group">
                         <label for="edit-startTime" class="col-sm-2 control-label">开始日期</label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <input type="text" class="form-control" id="edit-startDate" readonly>
+                            <input type="text" class="form-control time" id="edit-startDate" readonly>
                         </div>
                         <label for="edit-endTime" class="col-sm-2 control-label">结束日期</label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <input type="text" class="form-control" id="edit-endDate" readonly>
+                            <input type="text" class="form-control time" id="edit-endDate" readonly>
                         </div>
                     </div>
 

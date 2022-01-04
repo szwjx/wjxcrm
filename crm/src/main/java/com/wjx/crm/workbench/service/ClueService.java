@@ -28,4 +28,6 @@ public interface ClueService {
     boolean saveRemark(ClueRemark cl);
 
     boolean updateRemark(ClueRemark cl);
+
+    boolean unbund(String id);
 }
