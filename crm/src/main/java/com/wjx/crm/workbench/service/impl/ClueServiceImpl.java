@@ -3,6 +3,7 @@ package com.wjx.crm.workbench.service.impl;
 import com.wjx.crm.settings.dao.UserDao;
 import com.wjx.crm.settings.domain.User;
 import com.wjx.crm.utils.SqlSessionUtil;
+import com.wjx.crm.utils.UUIDUtil;
 import com.wjx.crm.vo.PaginationVO;
 import com.wjx.crm.workbench.dao.ClueActivityRelationDao;
 import com.wjx.crm.workbench.dao.ClueDao;
@@ -177,6 +178,29 @@ public class ClueServiceImpl implements ClueService {
         if (count!=1){
 
             flag = false;
+        }
+
+        return flag;
+    }
+
+    @Override
+    public boolean bund(String cid, String[] aids) {
+
+        boolean flag = true;
+
+        for (String aid:aids){
+
+            //取得每一个aid和cid做关联
+            ClueActivityRelation car = new ClueActivityRelation();
+            car.setId(UUIDUtil.getUUID());
+            car.setActivityId(aid);
+            car.setClueId(cid);
+
+            //添加关联关系表中的记录
+            int count = clueActivityRelationDao.bund(car);
+            if (count!=1){
+                flag = false;
+            }
         }
 
         return flag;

@@ -686,11 +686,14 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-appellation">
 								  <option></option>
-								  <option>先生</option>
+									<c:forEach items="${appellationList}" var="a">
+										<option value="${a.value}">${a.text}</option>
+									</c:forEach>
+								  <%--<option>先生</option>
 								  <option>夫人</option>
 								  <option>女士</option>
 								  <option>博士</option>
-								  <option>教授</option>
+								  <option>教授</option>--%>
 								</select>
 							</div>
 							<label for="edit-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
@@ -730,13 +733,16 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-state">
 								  <option></option>
-								  <option>试图联系</option>
+									<c:forEach items="${clueStateList}" var="c">
+										<option value="${c.value}">${c.text}</option>
+									</c:forEach>
+								  <%--<option>试图联系</option>
 								  <option>将来联系</option>
 								  <option>已联系</option>
 								  <option>虚假线索</option>
 								  <option>丢失线索</option>
 								  <option>未联系</option>
-								  <option>需要条件</option>
+								  <option>需要条件</option>--%>
 								</select>
 							</div>
 						</div>
@@ -746,7 +752,10 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-source">
 								  <option></option>
-								  <option>广告</option>
+									<c:forEach items="${sourceList}" var="s">
+										<option value="${s.value}">${s.text}</option>
+									</c:forEach>
+								  <%--<option>广告</option>
 								  <option>推销电话</option>
 								  <option>员工介绍</option>
 								  <option>外部介绍</option>
@@ -759,7 +768,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 								  <option>交易会</option>
 								  <option>web下载</option>
 								  <option>web调研</option>
-								  <option>聊天</option>
+								  <option>聊天</option>--%>
 								</select>
 							</div>
 						</div>
@@ -853,7 +862,10 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				      <div class="input-group-addon">线索来源</div>
 					  <select class="form-control" id="search-source">
 					  	  <option></option>
-					  	  <option>广告</option>
+						  <c:forEach items="${sourceList}" var="s">
+							  <option value="${s.value}">${s.text}</option>
+						  </c:forEach>
+					  	  <%--<option>广告</option>
 						  <option>推销电话</option>
 						  <option>员工介绍</option>
 						  <option>外部介绍</option>
@@ -866,7 +878,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						  <option>交易会</option>
 						  <option>web下载</option>
 						  <option>web调研</option>
-						  <option>聊天</option>
+						  <option>聊天</option>--%>
 					  </select>
 				    </div>
 				  </div>
@@ -894,13 +906,16 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				      <div class="input-group-addon">线索状态</div>
 					  <select class="form-control" id="search-state">
 					  	<option></option>
-					  	<option>试图联系</option>
+						  <c:forEach items="${clueStateList}" var="c">
+							  <option value="${c.value}">${c.text}</option>
+						  </c:forEach>
+					  	<%--<option>试图联系</option>
 					  	<option>将来联系</option>
 					  	<option>已联系</option>
 					  	<option>虚假线索</option>
 					  	<option>丢失线索</option>
 					  	<option>未联系</option>
-					  	<option>需要条件</option>
+					  	<option>需要条件</option>--%>
 					  </select>
 				    </div>
 				  </div>

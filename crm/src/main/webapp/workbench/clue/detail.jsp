@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
 String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 	request.getServerPort() + request.getContextPath() + "/";
 %>
@@ -337,6 +338,120 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 		})
 
+		//为关联市场活动模态窗口中的搜索绑定键盘单击事件
+		$("#aname").keydown(function (event) {
+
+			//如果是回车键
+			if (event.keyCode==13){
+
+				//alert("查询并关联市场活动");
+
+				$.ajax({
+					url : "workbench/clue/getActivityListByNameAndNoClueId.do",
+					data : {
+
+						"aname" : $.trim($("#aname").val()),
+						"clueId" : "${c.id}"
+
+					},
+					type : "get",
+					dataType : "json",
+					success : function (data) {
+
+						/*
+							data
+								[{市场活动1}，{2}，{3}]
+						 */
+						var html = "";
+
+						$.each(data,function (i,n) {
+
+							html += '<tr>';
+							html += '<td><input type="checkbox" name="xz" value="'+n.id+'"/></td>';
+							html += '<td>'+n.name+'</td>';
+							html += '<td>'+n.startDate+'</td>';
+							html += '<td>'+n.endDate+'</td>';
+							html += '<td>'+n.owner+'</td>';
+							html += '</tr>';
+						})
+
+						$("#activitySearchBody").html(html);
+
+					}
+				})
+
+				/*
+					模态窗口默认的回车行为会刷新当前模态窗口，所以要禁用掉
+				 */
+				return false;
+			}
+			
+		})
+
+		//为全选的复选框绑定事件，触发全选操作
+		$("#qx").click(function () {
+
+			$("input[name=xz]").prop("checked",this.checked)
+
+		})
+		$("#activitySearchBody").on("click",$("input[name=xz]"),function () {
+
+			$("#qx").prop("checked",$("input[name=xz]").length==$("input[name=xz]:checked").length);
+
+		})
+		//为关联按钮绑定事件，执行关联表的添加操作
+		$("#bundBtn").click(function () {
+
+			var $xz = $("input[name=xz]:checked");
+
+			if ($xz.length==0){
+				alert("请选择要关联的活动");
+			}else {
+				var param = "cid=${c.id}&";
+
+				for (var i = 0;i<$xz.length;i++){
+
+					param += "aid="+$($xz[i]).val();
+
+					if (i<$xz.length-1){
+						param +="&";
+					}
+				}
+
+				//alert(param);
+				$.ajax({
+					url : "workbench/clue/bund.do",
+					data : param,
+					type : "post",
+					dataType : "json",
+					success : function (data) {
+						/*
+							data
+								["success":true/false]
+						 */
+						if (data.success){
+
+							//关联成功
+							//刷新关联市场活动的列表
+							showActivityList();
+							//清除搜索框内的信息，清空activitySearchBody中的内容，去掉复选框中的√
+							$("#aname").val("");
+							$("#activityTable tbody").html("");
+							$("#qx").prop("checked",false);
+
+							//关闭模态窗口
+							$("#bundModal").modal("hide");
+						}else {
+							alert("关联市场活动失败")
+						}
+
+					}
+				})
+			}
+
+		})
+
+
 
 	});
 
@@ -575,7 +690,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 					<div class="btn-group" style="position: relative; top: 18%; left: 8px;">
 						<form class="form-inline" role="form">
 						  <div class="form-group has-feedback">
-						    <input type="text" class="form-control" style="width: 300px;" placeholder="请输入市场活动名称，支持模糊查询">
+						    <input type="text" class="form-control" id="aname" style="width: 300px;" placeholder="请输入市场活动名称，支持模糊查询">
 						    <span class="glyphicon glyphicon-search form-control-feedback"></span>
 						  </div>
 						</form>
@@ -583,7 +698,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 					<table id="activityTable" class="table table-hover" style="width: 900px; position: relative;top: 10px;">
 						<thead>
 							<tr style="color: #B3B3B3;">
-								<td><input type="checkbox"/></td>
+								<td><input type="checkbox" id="qx"/></td>
 								<td>名称</td>
 								<td>开始日期</td>
 								<td>结束日期</td>
@@ -591,8 +706,8 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 								<td></td>
 							</tr>
 						</thead>
-						<tbody>
-							<tr>
+						<tbody id="activitySearchBody">
+							<%--<tr>
 								<td><input type="checkbox"/></td>
 								<td>发传单</td>
 								<td>2020-10-10</td>
@@ -605,13 +720,13 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 								<td>2020-10-10</td>
 								<td>2020-10-20</td>
 								<td>zhangsan</td>
-							</tr>
+							</tr>--%>
 						</tbody>
 					</table>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">关联</button>
+					<button type="button" class="btn btn-primary" id="bundBtn">关联</button>
 				</div>
 			</div>
 		</div>
@@ -650,11 +765,14 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
                             <div class="col-sm-10" style="width: 300px;">
                                 <select class="form-control" id="edit-appellation">
                                     <option></option>
-                                    <option>先生</option>
+									<c:forEach items="${appellationList}" var="a">
+										<option value="${a.value}">${a.text}</option>
+									</c:forEach>
+                                    <%--<option>先生</option>
                                     <option>夫人</option>
                                     <option>女士</option>
                                     <option>博士</option>
-                                    <option>教授</option>
+                                    <option>教授</option>--%>
                                 </select>
                             </div>
                             <label for="edit-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
@@ -694,13 +812,16 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
                             <div class="col-sm-10" style="width: 300px;">
                                 <select class="form-control" id="edit-state">
                                     <option></option>
-                                    <option>试图联系</option>
+									<c:forEach items="${clueStateList}" var="c">
+										<option value="${c.value}">${c.text}</option>
+									</c:forEach>
+                                    <%--<option>试图联系</option>
                                     <option>将来联系</option>
                                     <option>已联系</option>
                                     <option>虚假线索</option>
                                     <option>丢失线索</option>
                                     <option>未联系</option>
-                                    <option>需要条件</option>
+                                    <option>需要条件</option>--%>
                                 </select>
                             </div>
                         </div>
@@ -710,7 +831,10 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
                             <div class="col-sm-10" style="width: 300px;">
                                 <select class="form-control" id="edit-source">
                                     <option></option>
-                                    <option>广告</option>
+									<c:forEach items="${sourceList}" var="s">
+										<option value="${s.value}">${s.text}</option>
+									</c:forEach>
+                                    <%--<option>广告</option>
                                     <option>推销电话</option>
                                     <option>员工介绍</option>
                                     <option>外部介绍</option>
@@ -723,7 +847,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
                                     <option>交易会</option>
                                     <option>web下载</option>
                                     <option>web调研</option>
-                                    <option>聊天</option>
+                                    <option>聊天</option>--%>
                                 </select>
                             </div>
                         </div>
@@ -784,7 +908,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			<h3>${c.fullname}${c.appellation}<small>${c.company}</small></h3>
 		</div>
 		<div style="position: relative; height: 50px; width: 500px;  top: -72px; left: 700px;">
-			<button type="button" class="btn btn-default" onclick="window.location.href='convert.html';"><span class="glyphicon glyphicon-retweet"></span> 转换</button>
+			<button type="button" class="btn btn-default" onclick="window.location.href='workbench/clue/convert.jsp?id=${c.id}&fullname=${c.fullname}&appellation=${c.appellation}&company=${c.company}&owner=${c.owner}';"><span class="glyphicon glyphicon-retweet"></span> 转换</button>
 			<button type="button" class="btn btn-default" id="editBtn"><span class="glyphicon glyphicon-edit"></span> 编辑</button>
 			<button type="button" class="btn btn-danger" id="deleteBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 		</div>

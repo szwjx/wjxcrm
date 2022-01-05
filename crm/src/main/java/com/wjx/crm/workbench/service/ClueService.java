@@ -30,4 +30,6 @@ public interface ClueService {
     boolean updateRemark(ClueRemark cl);
 
     boolean unbund(String id);
+
+    boolean bund(String cid, String[] aids);
 }
