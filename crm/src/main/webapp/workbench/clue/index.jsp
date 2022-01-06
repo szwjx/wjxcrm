@@ -49,9 +49,6 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			//走后台，获得用户信息列表，为所有者下拉框赋值
 			$.ajax({
 				url :"workbench/clue/getUserList.do",
-				data : {
-
-				},
 				type:"get",
 				dataType:"json",
 				success:function (data) {
@@ -124,7 +121,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						//刷新市场活动信息列表（局部刷新）
 						//做完添加操作后，应该回到第一页，维持每页展现的记录数
 
-						pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+						pageList(1,$("#cluePage").bs_pagination('getOption', 'rowsPerPage'));
 
 
 						$("#clueAddForm")[0].reset();
@@ -146,7 +143,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		//默认展开列表第一页，每页展现两条记录
 		pageList(1,2);
 
-		//为查询按钮绑定事件，出发pageList方法
+		//为查询按钮绑定事件，触发pageList方法
 		$("#searchBtn").click(function () {
 			/*
 			* 点击查询按钮时，应该将搜索框中的信息保存起来，保存到隐藏域中
@@ -159,7 +156,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			$("#hidden-state").val($.trim($("#search-state").val())),
 			$("#hidden-source").val($.trim($("#search-source").val())),
 
-			pageList(1 ,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+			pageList(1 ,$("#cluePage").bs_pagination('getOption', 'rowsPerPage'));
 		});
 
 		//为全选的复选框绑定事件，触发全选操作
@@ -363,8 +360,8 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							修改操作后，应该维持在当前页，维持每页展现的记录数
 
 						 */
-						pageList($("#activityPage").bs_pagination('getOption', 'currentPage')
-								,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+						pageList($("#cluePage").bs_pagination('getOption', 'currentPage')
+								,$("#cluePage").bs_pagination('getOption', 'rowsPerPage'));
 
 
 
@@ -392,7 +389,6 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
         //查询前，将隐藏域中的信息取出来，重新赋予到搜索框
         $("#search-fullname").val($.trim($("#hidden-fullname").val())),
-		//$("#search-appellation").val($.trim($("#hidden-appellation").val())),
 		$("#search-owner").val($.trim($("#hidden-owner").val())),
         $("#search-company").val($.trim($("#hidden-company").val())),
         $("#search-mphone").val($.trim($("#hidden-mphone").val())),
@@ -452,7 +448,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
                     var totalPages = data.total%pageSize==0?data.total/pageSize:parseInt(data.total/pageSize)+1;
 
                     //数据处理完毕后，结合分页插件对前端展现分页信息
-                    $("#activityPage").bs_pagination({
+                    $("#cluePage").bs_pagination({
                         currentPage: pageNo, // 页码
                         rowsPerPage: pageSize, // 每页显示的记录条数
                         maxRowsPerPage: 20, // 每页最多显示的记录条数
@@ -481,7 +477,6 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 <body>
 
     <input type="hidden" id="hidden-fullname" />
-<%--	<input type="hidden" id="hidden-appellation" />--%>
 	<input type="hidden" id="hidden-company" />
 	<input type="hidden" id="hidden-phone" />
     <input type="hidden" id="hidden-mphone" />
@@ -973,7 +968,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			</div>
 			
 			<div style="height: 50px; position: relative;top: 60px;">
-				<div id="activityPage"></div>
+				<div id="cluePage"></div>
 			</div>
 			
 		</div>

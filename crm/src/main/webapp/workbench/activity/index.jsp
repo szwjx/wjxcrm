@@ -48,9 +48,6 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			//走后台，获得用户信息列表，为所有者下拉框赋值
 			$.ajax({
 				url :"workbench/activity/getUserList.do",
-				data : {
-
-				},
 				type:"get",
 				dataType:"json",
 				success:function (data) {
@@ -205,7 +202,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			$("#hidden-startDate").val($.trim($("#search-startDate").val())),
 			$("#hidden-endDate").val($.trim($("#search-endDate").val())),
 
-			pageList(1,2);
+			pageList(1 ,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
 
 		})
 
