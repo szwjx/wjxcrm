@@ -3,7 +3,9 @@ package com.wjx.crm.workbench.service;
 import com.wjx.crm.vo.PaginationVO;
 import com.wjx.crm.workbench.domain.Clue;
 import com.wjx.crm.workbench.domain.ClueRemark;
+import com.wjx.crm.workbench.domain.Tran;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -32,4 +34,6 @@ public interface ClueService {
     boolean unbund(String id);
 
     boolean bund(String cid, String[] aids);
+
+    boolean convert(String clueId, Tran t, String createBy);
 }

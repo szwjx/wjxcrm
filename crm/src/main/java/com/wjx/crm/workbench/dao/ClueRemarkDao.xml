@@ -5,6 +5,7 @@
 
 <mapper namespace="com.wjx.crm.workbench.dao.ClueRemarkDao">
 
+
     <update id="updateRemark">
         update tbl_clue_remark set noteContent=#{noteContent},editBy=#{editBy},editTime=#{editTime},editFlag=#{editFlag}
 
@@ -35,7 +36,7 @@
     </insert>
 
     <delete id="deleteRemark">
-        delete from tbl_clue_remark where id=#{id}
+        delete from tbl_clue_remark where id=#{id} or clueId=#{clueId}
     </delete>
 
     <select id="getRemarkListByCid" resultType="ClueRemark">

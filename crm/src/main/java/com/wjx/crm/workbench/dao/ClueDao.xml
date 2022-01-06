@@ -5,6 +5,10 @@
 
 <mapper namespace="com.wjx.crm.workbench.dao.ClueDao">
 
+    <delete id="delete1">
+        delete from tbl_clue where id=#{id}
+    </delete>
+
     <select id="detail" resultType="Clue">
         select
 

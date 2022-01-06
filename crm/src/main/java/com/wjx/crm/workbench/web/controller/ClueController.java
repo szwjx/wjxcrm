@@ -11,6 +11,7 @@ import com.wjx.crm.vo.PaginationVO;
 import com.wjx.crm.workbench.domain.Activity;
 import com.wjx.crm.workbench.domain.Clue;
 import com.wjx.crm.workbench.domain.ClueRemark;
+import com.wjx.crm.workbench.domain.Tran;
 import com.wjx.crm.workbench.service.ActivityService;
 import com.wjx.crm.workbench.service.ClueService;
 import com.wjx.crm.workbench.service.impl.ActivityServiceImpl;
@@ -64,7 +65,75 @@ public class ClueController extends HttpServlet {
             getActivityListByNameAndNoClueId(request, response);
         }else if ("/workbench/clue/bund.do".equals(path)) {
             bund(request, response);
+        }else if ("/workbench/clue/getActivityListByName.do".equals(path)) {
+            getActivityListByName(request, response);
+        }else if ("/workbench/clue/convert.do".equals(path)) {
+            convert(request, response);
         }
+    }
+
+    private void convert(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+
+        System.out.println("执行线索转换操作");
+
+        String clueId = request.getParameter("clueId");
+
+        //接收是否需要创建交易的标记
+        String flag = request.getParameter("flag");
+
+        String createBy = ((User)request.getSession().getAttribute("user")).getName();
+
+        Tran t = null;
+
+        if ("a".equals(flag)){
+
+            t = new Tran();
+            //接收表单中的数据
+            String money = request.getParameter("money");
+            String name = request.getParameter("name");
+            String expectedDate = request.getParameter("expectedDate");
+            String stage = request.getParameter("stage");
+            String activityId = request.getParameter("activityId");
+            String id = UUIDUtil.getUUID();
+            String createTime = DateTimeUtil.getSysTime();
+
+            t.setId(id);
+            t.setMoney(money);
+            t.setName(name);
+            t.setExpectedDate(expectedDate);
+            t.setStage(stage);
+            t.setActivityId(activityId);
+            t.setCreateBy(createBy);
+            t.setCreateTime(createTime);
+        }
+
+        ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
+
+        /*
+            为业务层传递参数：必须有clueId,有了clueId才知道我们要转换哪条记录
+                            t,在线索转换过程中有可能会创建一笔交易（业务层接收的t也有可能是nulL）
+         */
+        boolean flag1 = cs.convert(clueId,t,createBy);
+
+        if (flag1){
+
+            //重定向
+            response.sendRedirect(request.getContextPath()+"/workbench/clue/index.jsp");
+        }
+    }
+
+    private void getActivityListByName(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("查询市场活动列表（根据名称模糊查）");
+
+        String aname = request.getParameter("aname");
+
+        ActivityService as = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+
+        List<Activity> aList = as.getActivityListByName(aname);
+
+        PrintJson.printJsonObj(response,aList);
+
     }
 
     private void bund(HttpServletRequest request, HttpServletResponse response) {
@@ -103,7 +172,6 @@ public class ClueController extends HttpServlet {
 
     }
 
-
     private void unbund(HttpServletRequest request, HttpServletResponse response) {
 
         System.out.println("根据id解除关联市场活动");
@@ -116,7 +184,6 @@ public class ClueController extends HttpServlet {
 
         PrintJson.printJsonFlag(response,flag);
     }
-
 
     private void updateRemark(HttpServletRequest request, HttpServletResponse response) {
 
