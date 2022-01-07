@@ -4,12 +4,8 @@ import com.wjx.crm.settings.dao.UserDao;
 import com.wjx.crm.settings.domain.User;
 import com.wjx.crm.utils.SqlSessionUtil;
 import com.wjx.crm.vo.PaginationVO;
-import com.wjx.crm.workbench.dao.ActivityDao;
-import com.wjx.crm.workbench.dao.ActivityRemarkDao;
-import com.wjx.crm.workbench.dao.CustomerDao;
-import com.wjx.crm.workbench.dao.CustomerRemarkDao;
-import com.wjx.crm.workbench.domain.Clue;
-import com.wjx.crm.workbench.domain.Customer;
+import com.wjx.crm.workbench.dao.*;
+import com.wjx.crm.workbench.domain.*;
 import com.wjx.crm.workbench.service.CustomerService;
 
 import java.util.HashMap;
@@ -23,6 +19,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     private CustomerDao customerDao = SqlSessionUtil.getSqlSession().getMapper(CustomerDao.class);
     private CustomerRemarkDao customerRemarkDao = SqlSessionUtil.getSqlSession().getMapper(CustomerRemarkDao.class);
+
+    private ContactsDao contactsDao = SqlSessionUtil.getSqlSession().getMapper(ContactsDao.class);
 
 
     @Override
@@ -79,7 +77,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Map<String, Object> getUserListAndClue(String id) {
+    public Map<String, Object> getUserListAndCustomer(String id) {
         //取uList
         List<User> uList = userDao.getUserList();
         //取c
@@ -114,6 +112,60 @@ public class CustomerServiceImpl implements CustomerService {
         Customer c = customerDao.detail(id);
 
         return c;
+    }
+
+    @Override
+    public List<CustomerRemark> getRemarkListByCid(String customerId) {
+
+        List<CustomerRemark> cList = customerRemarkDao.getRemarkListByCid(customerId);
+
+        return cList;
+    }
+
+    @Override
+    public boolean deleteRemark(String id) {
+
+        boolean flag = true;
+
+        int count = customerRemarkDao.deleteRemark(id);
+
+        if (count!=1){
+            flag = false;
+        }
+
+        return flag;
+    }
+
+    @Override
+    public boolean saveRemark(CustomerRemark cusr) {
+
+        boolean flag = true;
+
+        int count = customerRemarkDao.saveRemark(cusr);
+
+        if (count!=1){
+
+            flag=false;
+
+        }
+
+        return flag;
+    }
+
+    @Override
+    public boolean updateRemark(CustomerRemark cusr) {
+
+        boolean flag = true;
+
+        int count = customerRemarkDao.updateRemark(cusr);
+
+        if (count!=1){
+
+            flag=false;
+
+        }
+
+        return flag;
     }
 
 

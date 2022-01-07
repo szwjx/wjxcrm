@@ -5,6 +5,12 @@
 
 <mapper namespace="com.wjx.crm.workbench.dao.ContactsDao">
 
+    <!--<select id="getByid"  resultType="Contacts">
+
+        select * from tbl_contacts where id=#{id}
+
+    </select>-->
+
     <insert id="save">
 
         insert into tbl_contacts(

@@ -27,9 +27,9 @@ public interface ClueService {
 
     boolean deleteRemark(String id);
 
-    boolean saveRemark(ClueRemark cl);
+    boolean saveRemark(ClueRemark cr);
 
-    boolean updateRemark(ClueRemark cl);
+    boolean updateRemark(ClueRemark cr);
 
     boolean unbund(String id);
 

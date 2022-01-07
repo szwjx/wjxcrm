@@ -5,4 +5,6 @@ import com.wjx.crm.workbench.domain.Contacts;
 public interface ContactsDao {
 
     int save(Contacts con);
+
+//    Contacts getByid(String customerId);
 }

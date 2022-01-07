@@ -14,7 +14,7 @@ public interface ClueRemarkDao {
 
     int deleteRemark(String id);
 
-    int saveRemark(ClueRemark cl);
+    int saveRemark(ClueRemark cr);
 
-    int updateRemark(ClueRemark cl);
+    int updateRemark(ClueRemark cr);
 }

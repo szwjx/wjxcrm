@@ -151,11 +151,11 @@ public class ClueServiceImpl implements ClueService {
     }
 
     @Override
-    public boolean saveRemark(ClueRemark cl) {
+    public boolean saveRemark(ClueRemark cr) {
 
         boolean flag = true;
 
-        int count = clueRemarkDao.saveRemark(cl);
+        int count = clueRemarkDao.saveRemark(cr);
 
         if (count!=1){
 
@@ -167,11 +167,11 @@ public class ClueServiceImpl implements ClueService {
     }
 
     @Override
-    public boolean updateRemark(ClueRemark cl) {
+    public boolean updateRemark(ClueRemark cr) {
 
         boolean flag = true;
 
-        int count = clueRemarkDao.updateRemark(cl);
+        int count = clueRemarkDao.updateRemark(cr);
 
         if (count!=1){
 

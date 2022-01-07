@@ -5,6 +5,43 @@
 
 <mapper namespace="com.wjx.crm.workbench.dao.CustomerRemarkDao">
 
+    <update id="updateRemark">
+        update tbl_customer_remark set noteContent=#{noteContent},editBy=#{editBy},editTime=#{editTime},editFlag=#{editFlag}
+
+        where id=#{id}
+    </update>
+
+    <insert id="saveRemark">
+        insert into tbl_customer_remark(
+
+            id,
+            noteContent,
+            createTime,
+            createBy,
+            editFlag,
+            customerId
+
+        )
+
+        values (
+
+                   #{id},
+                   #{noteContent},
+                   #{createTime},
+                   #{createBy},
+                   #{editFlag},
+                   #{customerId}
+               )
+    </insert>
+
+    <delete id="deleteRemark">
+        delete from tbl_customer_remark where id=#{id}
+    </delete>
+
+    <select id="getRemarkListByCid" resultType="CustomerRemark">
+        select * from tbl_customer_remark where customerId=#{customerId}
+    </select>
+
     <delete id="deleteByCids">
 
         delete

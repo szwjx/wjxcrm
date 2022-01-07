@@ -97,5 +97,10 @@
         <url-pattern>/workbench/customer/getUserListAndCustomer.do</url-pattern>
         <url-pattern>/workbench/customer/update.do</url-pattern>
         <url-pattern>/workbench/customer/detail.do</url-pattern>
+        <url-pattern>/workbench/customer/getRemarkListByCid.do</url-pattern>
+        <url-pattern>/workbench/customer/deleteRemark.do</url-pattern>
+        <url-pattern>/workbench/customer/saveRemark.do</url-pattern>
+        <url-pattern>/workbench/customer/updateRemark.do</url-pattern>
+        <url-pattern>/workbench/customer/getContactsByCustomerId.do</url-pattern>
     </servlet-mapping>
 </web-app>

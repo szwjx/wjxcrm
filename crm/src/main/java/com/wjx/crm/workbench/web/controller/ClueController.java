@@ -195,20 +195,20 @@ public class ClueController extends HttpServlet {
         String editBy = ((User)request.getSession().getAttribute("user")).getName();
         String editFlag = "1";
 
-        ClueRemark cl = new ClueRemark();
-        cl.setId(id);
-        cl.setNoteContent(noteContent);
-        cl.setEditTime(editTime);
-        cl.setEditBy(editBy);
-        cl.setEditFlag(editFlag);
+        ClueRemark cr = new ClueRemark();
+        cr.setId(id);
+        cr.setNoteContent(noteContent);
+        cr.setEditTime(editTime);
+        cr.setEditBy(editBy);
+        cr.setEditFlag(editFlag);
 
         ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
 
-        boolean flag = cs.updateRemark(cl);
+        boolean flag = cs.updateRemark(cr);
 
         Map<String,Object> map = new HashMap<String, Object>();
         map.put("success",flag);
-        map.put("cl",cl);
+        map.put("cr",cr);
 
         PrintJson.printJsonObj(response,map);
     }
@@ -224,21 +224,21 @@ public class ClueController extends HttpServlet {
         String createBy = ((User)request.getSession().getAttribute("user")).getName();
         String editFlag = "0";
 
-        ClueRemark cl = new ClueRemark();
-        cl.setId(id);
-        cl.setClueId(clueId);
-        cl.setNoteContent(noteContent);
-        cl.setCreateTime(createTime);
-        cl.setCreateBy(createBy);
-        cl.setEditFlag(editFlag);
+        ClueRemark cr = new ClueRemark();
+        cr.setId(id);
+        cr.setClueId(clueId);
+        cr.setNoteContent(noteContent);
+        cr.setCreateTime(createTime);
+        cr.setCreateBy(createBy);
+        cr.setEditFlag(editFlag);
 
         ClueService cs = (ClueService) ServiceFactory.getService(new ClueServiceImpl());
 
-        boolean flag = cs.saveRemark(cl);
+        boolean flag = cs.saveRemark(cr);
 
         Map<String,Object> map = new HashMap<String, Object>();
         map.put("success",flag);
-        map.put("cl",cl);
+        map.put("cr",cr);
 
         PrintJson.printJsonObj(response,map);
     }

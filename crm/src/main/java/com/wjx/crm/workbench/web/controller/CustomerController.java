@@ -9,7 +9,9 @@ import com.wjx.crm.utils.ServiceFactory;
 import com.wjx.crm.utils.UUIDUtil;
 import com.wjx.crm.vo.PaginationVO;
 import com.wjx.crm.workbench.domain.Clue;
+import com.wjx.crm.workbench.domain.ClueRemark;
 import com.wjx.crm.workbench.domain.Customer;
+import com.wjx.crm.workbench.domain.CustomerRemark;
 import com.wjx.crm.workbench.service.ClueService;
 import com.wjx.crm.workbench.service.CustomerService;
 import com.wjx.crm.workbench.service.impl.ClueServiceImpl;
@@ -48,7 +50,103 @@ public class CustomerController extends HttpServlet {
             update(request,response);
         }else  if("/workbench/customer/detail.do".equals(path)){
             detail(request,response);
+        }else  if("/workbench/customer/getRemarkListByCid.do".equals(path)){
+            getRemarkListByCid(request,response);
+        }else  if("/workbench/customer/deleteRemark.do".equals(path)){
+            deleteRemark(request,response);
+        }else  if("/workbench/customer/saveRemark.do".equals(path)){
+            saveRemark(request,response);
+        }else  if("/workbench/customer/updateRemark.do".equals(path)){
+            updateRemark(request,response);
         }
+    }
+
+
+
+    private void updateRemark(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("执行修改备注的操作");
+
+        String id = request.getParameter("id");
+        String noteContent = request.getParameter("noteContent");
+        String editTime = DateTimeUtil.getSysTime();
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+        String editFlag = "1";
+
+        CustomerRemark cusr = new CustomerRemark();
+        cusr.setId(id);
+        cusr.setNoteContent(noteContent);
+        cusr.setEditTime(editTime);
+        cusr.setEditBy(editBy);
+        cusr.setEditFlag(editFlag);
+
+        CustomerService cs = (CustomerService) ServiceFactory.getService(new CustomerServiceImpl());
+
+        boolean flag = cs.updateRemark(cusr);
+
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("success",flag);
+        map.put("cusr",cusr);
+
+        PrintJson.printJsonObj(response,map);
+    }
+
+    private void saveRemark(HttpServletRequest request, HttpServletResponse response) {
+
+
+        System.out.println("执行添加备注操作");
+
+        String noteContent = request.getParameter("noteContent");
+        String customerId = request.getParameter("customerId");
+        String id =  UUIDUtil.getUUID();
+        String createTime = DateTimeUtil.getSysTime();
+        String createBy = ((User)request.getSession().getAttribute("user")).getName();
+        String editFlag = "0";
+
+        CustomerRemark cusr = new CustomerRemark();
+        cusr.setId(id);
+        cusr.setCustomerId(customerId);
+        cusr.setNoteContent(noteContent);
+        cusr.setCreateTime(createTime);
+        cusr.setCreateBy(createBy);
+        cusr.setEditFlag(editFlag);
+
+        CustomerService cs = (CustomerService) ServiceFactory.getService(new CustomerServiceImpl());
+
+        boolean flag = cs.saveRemark(cusr);
+
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("success",flag);
+        map.put("cusr",cusr);
+
+        PrintJson.printJsonObj(response,map);
+    }
+
+    private void deleteRemark(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("删除备注操作");
+
+        String id = request.getParameter("id");
+
+        CustomerService cs = (CustomerService) ServiceFactory.getService(new CustomerServiceImpl());
+
+        boolean flag = cs.deleteRemark(id);
+
+        PrintJson.printJsonFlag(response,flag);
+    }
+
+    private void getRemarkListByCid(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("根据客户id，取得备注信息列表");
+
+        String customerId = request.getParameter("customerId");
+
+        CustomerService cs = (CustomerService) ServiceFactory.getService(new CustomerServiceImpl());
+
+        List<CustomerRemark> cList = cs.getRemarkListByCid(customerId);
+
+
+        PrintJson.printJsonObj(response,cList);
     }
 
     private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -122,7 +220,7 @@ public class CustomerController extends HttpServlet {
 
             同时获得这两个值复用性不高不用vo,用map
          */
-        Map<String,Object> map = cs.getUserListAndClue(id);
+        Map<String,Object> map = cs.getUserListAndCustomer(id);
 
         PrintJson.printJsonObj(response,map);
 

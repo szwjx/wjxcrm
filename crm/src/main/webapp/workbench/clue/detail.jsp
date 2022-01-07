@@ -105,15 +105,15 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						//在textarea文本域上方新增一个div
 						var html = "";
 
-						html += '<div id="'+data.cl.id+'" class="remarkDiv" style="height: 60px;">';
+						html += '<div id="'+data.cr.id+'" class="remarkDiv" style="height: 60px;">';
 						html += '<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">';
 						html += '<div style="position: relative; top: -40px; left: 40px;" >';
-						html += '<h5>'+data.cl.noteContent+'</h5>';
-						html += '<font color="gray">线索</font> <font color="gray">-</font> <b>${c.fullname}${c.appellation}-${c.company}</b> <small style="color: gray;"> '+(data.cl.createTime)+' 由'+(data.cl.createBy)+'</small>';
+						html += '<h5>'+data.cr.noteContent+'</h5>';
+						html += '<font color="gray">线索</font> <font color="gray">-</font> <b>${c.fullname}${c.appellation}-${c.company}</b> <small style="color: gray;"> '+(data.cr.createTime)+' 由'+(data.cr.createBy)+'</small>';
 						html += '<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">';
 						html += '<a class="myHref" href="javascript:void(0);" ><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #FF0000;"></span></a>';
 						html += '&nbsp;&nbsp;&nbsp;&nbsp;';
-						html += '<a class="myHref" href="javascript:void(0);" onclick="deleteRemark(\''+data.cl.id+'\')"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #FF0000;"></span></a>';
+						html += '<a class="myHref" href="javascript:void(0);" onclick="deleteRemark(\''+data.cr.id+'\')"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #FF0000;"></span></a>';
 						html += '</div>';
 						html += '</div>';
 						html += '</div>';
@@ -161,8 +161,8 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 						//修改备注成功
 						//更新div中相应的信息，需要更新的内容有 noteContent，editTime，editBy
-						$("#e"+id).html(data.cl.noteContent);
-						$("#s"+id).html(data.cl.editTime+" 由"+data.cl.editBy);
+						$("#e"+id).html(data.cr.noteContent);
+						$("#s"+id).html(data.cr.editTime+" 由"+data.cr.editBy);
 
 						//更新内容之后，关闭模态窗口
 						$("#editRemarkModal").modal("hide");
@@ -646,7 +646,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 </head>
 <body>
 
-	<!-- 修改市场活动备注的模态窗口 -->
+	<!-- 修改线索备注的模态窗口 -->
 	<div class="modal fade" id="editRemarkModal" role="dialog">
 	<%-- 备注的id --%>
 	<input type="hidden" id="remarkId">
