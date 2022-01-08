@@ -23,4 +23,6 @@ public interface CustomerDao {
     int update(Customer c);
 
     Customer detail(String id);
+
+    List<String> getCustomerName(String name);
 }

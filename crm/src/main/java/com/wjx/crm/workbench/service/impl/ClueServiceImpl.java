@@ -231,8 +231,8 @@ public class ClueServiceImpl implements ClueService {
         Clue c = clueDao.getById(clueId);
 
         //(2) 通过线索对象提取客户信息，当该客户不存在的时候，新建客户（根据公司的名称精确匹配，判断该客户是否存在！）
-        String company = c.getCompany();
-        Customer cus = customerDao.getCustomerByName(company);
+        String customerName = c.getCompany();
+        Customer cus = customerDao.getCustomerByName(customerName);
         //如果cus为空，说明以前没有这个客户需要新建一个
         if (cus==null){
 
@@ -243,7 +243,7 @@ public class ClueServiceImpl implements ClueService {
             cus.setPhone(c.getPhone());
             cus.setOwner(c.getOwner());
             cus.setNextContactTime(c.getNextContactTime());
-            cus.setName(company);
+            cus.setName(customerName);
             cus.setDescription(c.getDescription());
             cus.setCreateTime(createTime);
             cus.setCreateBy(createBy);

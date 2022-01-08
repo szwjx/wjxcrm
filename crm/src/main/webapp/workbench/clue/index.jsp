@@ -187,7 +187,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 		})
 
-		//为删除按钮绑定事件，执行市场活动删除操作
+		//为删除按钮绑定事件，执行线索删除操作
 		$("#deleteBtn").click(function () {
 
 			//找到所有被选中的复选框的jquery对象
@@ -240,7 +240,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 		})
 
-		//为修改按钮绑定事件，执行修改市场活动操作
+		//为修改按钮绑定事件，执行修改线索操作
 		$("#editBtn").click(function () {
 
 			$(".time").datetimepicker({

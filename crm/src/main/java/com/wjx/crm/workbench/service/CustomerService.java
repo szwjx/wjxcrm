@@ -30,4 +30,6 @@ public interface CustomerService {
     boolean saveRemark(CustomerRemark cusr);
 
     boolean updateRemark(CustomerRemark cusr);
+
+    List<String> getCustomerName(String name);
 }

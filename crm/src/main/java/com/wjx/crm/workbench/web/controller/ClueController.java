@@ -299,7 +299,7 @@ public class ClueController extends HttpServlet {
 
     private void update(HttpServletRequest request, HttpServletResponse response) {
 
-        System.out.println("执行市场活动修改操作");
+        System.out.println("执行线索修改操作");
 
         String id = request.getParameter("id");
         String owner = request.getParameter("owner");
