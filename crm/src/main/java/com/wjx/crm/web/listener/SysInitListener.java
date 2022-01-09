@@ -8,9 +8,7 @@ import com.wjx.crm.utils.ServiceFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SysInitListener implements ServletContextListener {
 
@@ -51,6 +49,40 @@ public class SysInitListener implements ServletContextListener {
         }
         System.out.println("服务器缓存处理数据字典结束");
 
+
+        //---------------------------------
+        //数据字典处理完毕后，处理Stage2Possibility.properties文件，将阶段与可能性一一对应
+        /*
+            处理Stage2Possibility.properties文件步骤：
+                解析文件，将该文件中的键值对关系处理成java中的键值对关系（map）
+                Map<String(阶段),String(可能性possibility)> pMap = ...
+                pmap.put("01资质审查"，10)；
+                。。。。
+
+                pMap保存之后，放在服务器缓存中
+                application.setAttribute("pMap",pMap);
+         */
+
+        Map<String,String> pmap = new HashMap<String,String>();
+
+        //解析properties 使用ResourceBundle解析properties文件后缀要省略 也可以使用 Properties解析properties文件，但其一般用来解析没有中文的
+        ResourceBundle rb = ResourceBundle.getBundle("Stage2Possibility");
+
+        Enumeration<String> e = rb.getKeys();
+
+        while (e.hasMoreElements()){
+
+            //阶段
+            String key = e.nextElement();
+            //可能性
+            String value = rb.getString(key);
+
+            pmap.put(key,value);
+
+        }
+
+        //将pmap保存到服务器缓存中
+        application.setAttribute("pmap",pmap);
 
 
 

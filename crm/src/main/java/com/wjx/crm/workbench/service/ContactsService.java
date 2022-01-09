@@ -5,6 +5,7 @@ import com.wjx.crm.vo.PaginationVO;
 import com.wjx.crm.workbench.domain.Clue;
 import com.wjx.crm.workbench.domain.Contacts;
 
+import java.util.List;
 import java.util.Map;
 
 public interface ContactsService {
@@ -19,4 +20,6 @@ public interface ContactsService {
     Map<String, Object> getUserListAndContacts(String id);
 
     boolean update(Contacts c,String customerName);
+
+    List<Contacts> getContactsListByName(String cname);
 }

@@ -10,7 +10,6 @@ import com.wjx.crm.workbench.dao.ContactsDao;
 import com.wjx.crm.workbench.dao.ContactsRemarkDao;
 import com.wjx.crm.workbench.dao.CustomerDao;
 import com.wjx.crm.workbench.dao.CustomerRemarkDao;
-import com.wjx.crm.workbench.domain.Clue;
 import com.wjx.crm.workbench.domain.Contacts;
 import com.wjx.crm.workbench.domain.Customer;
 import com.wjx.crm.workbench.service.ContactsService;
@@ -177,6 +176,14 @@ public class ContactsServiceImpl implements ContactsService {
         }
 
         return flag;
+    }
+
+    @Override
+    public List<Contacts> getContactsListByName(String cname) {
+
+        List<Contacts> cList = contactsDao.getContactsListByName(cname);
+
+        return cList;
     }
 
 

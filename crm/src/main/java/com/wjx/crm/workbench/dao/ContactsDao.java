@@ -19,5 +19,7 @@ public interface ContactsDao {
 
     int update(Contacts c);
 
+    List<Contacts> getContactsListByName(String cname);
+
 //    Contacts getByid(String customerId);
 }
