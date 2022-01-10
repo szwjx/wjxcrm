@@ -5,6 +5,51 @@
 
 <mapper namespace="com.wjx.crm.workbench.dao.ContactsDao">
 
+    <select id="detail" resultType="Contacts">
+
+        select
+
+            c.id,
+            u.name as owner,
+            c.source,
+            con.name as customerId,
+            c.fullname,
+            c.appellation,
+            c.email,
+            c.mphone,
+            c.job,
+            c.birth,
+            c.createBy,
+            c.createTime,
+            c.editBy,
+            c.editTime,
+            c.description,
+            c.contactSummary,
+            c.nextContactTime,
+            c.address
+
+        from tbl_user u
+        join tbl_contacts c
+        join tbl_customer con
+        on con.id=c.customerId
+        on u.id=c.owner
+        where c.id=#{id}
+
+
+    </select>
+
+    <select id="getContactsListByCustomerId" resultType="Contacts">
+
+        select
+            c.id,
+            c.fullname,
+            c.email,
+            c.mphone
+
+        from tbl_contacts c
+        where c.customerId=#{customerId}
+    </select>
+
     <select id="getContactsListByName" resultType="Contacts">
 
         select

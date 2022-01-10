@@ -21,5 +21,9 @@ public interface ContactsDao {
 
     List<Contacts> getContactsListByName(String cname);
 
+    List<Contacts> getContactsListByCustomerId(String customerId);
+
+    Contacts detail(String id);
+
 //    Contacts getByid(String customerId);
 }

@@ -6,15 +6,19 @@ import com.wjx.crm.utils.UUIDUtil;
 import com.wjx.crm.workbench.dao.CustomerDao;
 import com.wjx.crm.workbench.dao.TranDao;
 import com.wjx.crm.workbench.dao.TranHistoryDao;
+import com.wjx.crm.workbench.dao.TranRemarkDao;
 import com.wjx.crm.workbench.domain.Customer;
 import com.wjx.crm.workbench.domain.Tran;
 import com.wjx.crm.workbench.domain.TranHistory;
 import com.wjx.crm.workbench.service.TranService;
 
+import java.util.List;
+
 public class TranServiceImpl implements TranService {
 
     private TranDao tranDao = SqlSessionUtil.getSqlSession().getMapper(TranDao.class);
     private TranHistoryDao tranHistoryDao = SqlSessionUtil.getSqlSession().getMapper(TranHistoryDao.class);
+    private TranRemarkDao tranRemarkDao = SqlSessionUtil.getSqlSession().getMapper(TranRemarkDao.class);
 
     private CustomerDao customerDao = SqlSessionUtil.getSqlSession().getMapper(CustomerDao.class);
 
@@ -91,4 +95,44 @@ public class TranServiceImpl implements TranService {
 
         return flag;
     }
+
+    @Override
+    public List<Tran> getTransactionListByCustomerId(String customerId) {
+
+        List<Tran> tList = tranDao.getTransactionListByCustomerId(customerId);
+
+        return tList;
+    }
+
+    @Override
+    public boolean deleteTransaction(String[] ids) {
+
+        /*
+               删除交易前先查询交易相关的备注，将其删除，再查询交易相关的交易历史删除
+
+          */
+        boolean flag = true;
+
+        //查询需要删除的交易备注数量
+        int count1 = tranRemarkDao.getCountByTranId(ids);
+
+        //删除备注，返回受影响的条数（实际删除的数量）
+        int count2 = tranRemarkDao.deleteByTranId(ids);
+
+        if (count1!=count2){
+            flag = false;
+        }
+
+
+        //删除交易
+        int count3 = tranDao.delete(ids);
+
+        if (count3!=1){
+            flag = false;
+        }
+
+        return flag;
+    }
+
+
 }

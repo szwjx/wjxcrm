@@ -4,7 +4,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 %><!DOCTYPE html>
 <html>
 <head>
-	base href="<%=basePath%>">
+	<base href="<%=basePath%>">
 <meta charset="UTF-8">
 
 <link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />

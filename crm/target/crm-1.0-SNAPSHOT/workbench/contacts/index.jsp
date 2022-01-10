@@ -50,6 +50,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			pickerPosition: "bottom-left"
 		});
 
+
 		//为创建按钮绑定事件，打开添加操作的模态窗口
 		$("#addBtn").click(function () {
 
@@ -156,7 +157,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 					"description" : $.trim($("#create-description").val()),
 					"contactSummary" : $.trim($("#create-contactSummary1").val()),
 					"nextContactTime" : $.trim($("#create-nextContactTime1").val()),
-					"address" : $.trim($("#create-address").val())
+					"address" : $.trim($("#creat-address").val())
 				},
 				type : "post",
 				dataType : "json",
@@ -174,7 +175,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						//刷新市场活动信息列表（局部刷新）
 						//做完添加操作后，应该回到第一页，维持每页展现的记录数
 
-						pageList(1,$("#contactsBody").bs_pagination('getOption', 'rowsPerPage'));
+						pageList(1,$("#contactsPage").bs_pagination('getOption', 'rowsPerPage'));
 
 
 						$("#contactsAddForm")[0].reset();
@@ -339,7 +340,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						})
 						$("#edit-owner").html(html);
 
-						//处理单条clue
+						//处理单条contacts
 						$("#edit-id").val(data.c.id);
 						$("#edit-owner").val(data.c.owner);
 						$("#edit-appellation").val(data.c.appellation);
@@ -355,7 +356,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						$("#edit-nextContactTime").val(data.c.nextContactTime);
 						$("#edit-address").val(data.c.address);
 
-						//所有值都填写好后就可以打开修改市场活动的模态窗口
+						//所有值都填写好后就可以打开修改联系人的模态窗口
 						$("#editContactsModal").modal("show");
 					}
 				})

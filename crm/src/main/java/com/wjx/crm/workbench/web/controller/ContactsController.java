@@ -11,6 +11,7 @@ import com.wjx.crm.utils.UUIDUtil;
 import com.wjx.crm.vo.PaginationVO;
 import com.wjx.crm.workbench.domain.Clue;
 import com.wjx.crm.workbench.domain.Contacts;
+import com.wjx.crm.workbench.domain.ContactsRemark;
 import com.wjx.crm.workbench.service.ClueService;
 import com.wjx.crm.workbench.service.ContactsService;
 import com.wjx.crm.workbench.service.CustomerService;
@@ -51,7 +52,116 @@ public class ContactsController extends HttpServlet {
             getUserListAndContacts(request, response);
         }else  if("/workbench/contacts/update.do".equals(path)) {
             update(request, response);
+        }else  if("/workbench/contacts/detail.do".equals(path)) {
+            detail(request, response);
+        }else  if("/workbench/contacts/getRemarkListByCid.do".equals(path)) {
+            getRemarkListByCid(request, response);
+        }else  if("/workbench/contacts/saveRemark.do".equals(path)) {
+            saveRemark(request, response);
+        }else  if("/workbench/contacts/updateRemark.do".equals(path)) {
+            updateRemark(request, response);
+        }else  if("/workbench/contacts/deleteRemark.do".equals(path)) {
+            deleteRemark(request, response);
         }
+    }
+
+    private void deleteRemark(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("删除备注操作");
+
+        String id = request.getParameter("id");
+
+        ContactsService cs = (ContactsService) ServiceFactory.getService(new ContactsServiceImpl());
+
+        boolean flag = cs.deleteRemark(id);
+
+        PrintJson.printJsonFlag(response,flag);
+    }
+
+    private void updateRemark(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("修改备注操作");
+
+        String id = request.getParameter("id");
+        String noteContent = request.getParameter("noteContent");
+        String editTime = DateTimeUtil.getSysTime();
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+        String editFlag = "1";
+
+        ContactsRemark cr = new ContactsRemark();
+        cr.setId(id);
+        cr.setNoteContent(noteContent);
+        cr.setEditTime(editTime);
+        cr.setEditBy(editBy);
+        cr.setEditFlag(editFlag);
+
+        ContactsService cs = (ContactsService) ServiceFactory.getService(new ContactsServiceImpl());
+
+        boolean flag = cs.updateRemark(cr);
+
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("success",flag);
+        map.put("cr",cr);
+
+        PrintJson.printJsonObj(response,map);
+    }
+
+    private void saveRemark(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("备注添加操作");
+
+        String noteContent = request.getParameter("noteContent");
+        String contactsId = request.getParameter("contactsId");
+        String id =  UUIDUtil.getUUID();
+        String createTime = DateTimeUtil.getSysTime();
+        String createBy = ((User)request.getSession().getAttribute("user")).getName();
+        String editFlag = "0";
+
+        ContactsRemark cr = new ContactsRemark();
+        cr.setId(id);
+        cr.setContactsId(contactsId);
+        cr.setNoteContent(noteContent);
+        cr.setCreateTime(createTime);
+        cr.setCreateBy(createBy);
+        cr.setEditFlag(editFlag);
+
+        ContactsService cs = (ContactsService) ServiceFactory.getService(new ContactsServiceImpl());
+
+        boolean flag = cs.saveRemark(cr);
+
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("success",flag);
+        map.put("cr",cr);
+
+        PrintJson.printJsonObj(response,map);
+    }
+
+    private void getRemarkListByCid(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("根据contactsId查询联系人备注列表");
+
+        String contactsId = request.getParameter("contactsId");
+
+        ContactsService cs = (ContactsService) ServiceFactory.getService(new ContactsServiceImpl());
+
+        List<ContactsRemark> cList = cs.getRemarkListByCid(contactsId);
+
+        PrintJson.printJsonObj(response,cList);
+    }
+
+    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        System.out.println("跳转到联系人详细信息操作");
+
+        String id = request.getParameter("id");
+
+        ContactsService cs = (ContactsService) ServiceFactory.getService(new ContactsServiceImpl());
+
+        Contacts c = cs.detail(id);
+
+        request.setAttribute("c",c);
+        //将a放进request域中，不能使用重定向，使用转发
+        request.getRequestDispatcher("/workbench/contacts/detail.jsp").forward(request,response);
     }
 
     private void update(HttpServletRequest request, HttpServletResponse response) {
@@ -175,13 +285,14 @@ public class ContactsController extends HttpServlet {
 
     private void save(HttpServletRequest request, HttpServletResponse response) {
 
-        System.out.println("执行线索添加操作");
+        System.out.println("执行联系人添加操作");
 
         String id = UUIDUtil.getUUID();
         String fullname = request.getParameter("fullname");
         String appellation = request.getParameter("appellation");
         String owner = request.getParameter("owner");
         String job = request.getParameter("job");
+        String mphone = request.getParameter("mphone");
         String email = request.getParameter("email");
         String birth = request.getParameter("birth");
         String customerName = request.getParameter("customerName");
@@ -199,6 +310,7 @@ public class ContactsController extends HttpServlet {
         c.setAppellation(appellation);
         c.setOwner(owner);
         c.setJob(job);
+        c.setMphone(mphone);
         c.setEmail(email);
         c.setBirth(birth);
         c.setSource(source);

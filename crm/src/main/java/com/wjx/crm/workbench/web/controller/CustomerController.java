@@ -8,14 +8,15 @@ import com.wjx.crm.utils.PrintJson;
 import com.wjx.crm.utils.ServiceFactory;
 import com.wjx.crm.utils.UUIDUtil;
 import com.wjx.crm.vo.PaginationVO;
-import com.wjx.crm.workbench.domain.Clue;
-import com.wjx.crm.workbench.domain.ClueRemark;
-import com.wjx.crm.workbench.domain.Customer;
-import com.wjx.crm.workbench.domain.CustomerRemark;
+import com.wjx.crm.workbench.domain.*;
 import com.wjx.crm.workbench.service.ClueService;
+import com.wjx.crm.workbench.service.ContactsService;
 import com.wjx.crm.workbench.service.CustomerService;
+import com.wjx.crm.workbench.service.TranService;
 import com.wjx.crm.workbench.service.impl.ClueServiceImpl;
+import com.wjx.crm.workbench.service.impl.ContactsServiceImpl;
 import com.wjx.crm.workbench.service.impl.CustomerServiceImpl;
+import com.wjx.crm.workbench.service.impl.TranServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -58,9 +59,72 @@ public class CustomerController extends HttpServlet {
             saveRemark(request,response);
         }else  if("/workbench/customer/updateRemark.do".equals(path)){
             updateRemark(request,response);
+        }else  if("/workbench/customer/getTransactionListByCustomerId.do".equals(path)){
+            getTransactionListByCustomerId(request,response);
+        }else  if("/workbench/customer/deleteTransaction.do".equals(path)){
+            deleteTransaction(request,response);
+        }else  if("/workbench/customer/getContactsListByCustomerId.do".equals(path)){
+            getContactsListByCustomerId(request,response);
+        }else  if("/workbench/customer/deleteContacts.do".equals(path)){
+            deleteContacts(request,response);
         }
     }
 
+    private void deleteContacts(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("删除联系人操作");
+
+        String id = request.getParameter("id");
+
+        String[] ids = {id};
+
+        ContactsService cs = (ContactsService) ServiceFactory.getService(new ContactsServiceImpl());
+
+        boolean flag = cs.deleteContacts(ids);
+
+        PrintJson.printJsonFlag(response,flag);
+    }
+
+    private void getContactsListByCustomerId(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("通过客户id获取客户联系人列表操作");
+
+        String customerId = request.getParameter("customerId");
+
+        ContactsService cs = (ContactsService) ServiceFactory.getService(new ContactsServiceImpl());
+
+        List<Contacts> cList = cs.getContactsListByCustomerId(customerId);
+
+        PrintJson.printJsonObj(response,cList);
+    }
+
+    private void deleteTransaction(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("删除交易操作");
+
+        String id = request.getParameter("id");
+
+        String[] ids = {id};
+
+        TranService ts = (TranService) ServiceFactory.getService(new TranServiceImpl());
+
+        boolean flag = ts.deleteTransaction(ids);
+
+        PrintJson.printJsonFlag(response,flag);
+    }
+
+    private void getTransactionListByCustomerId(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("通过客户id获得与其关联的交易列表");
+
+        String customerId = request.getParameter("customerId");
+
+        TranService ts = (TranService) ServiceFactory.getService(new TranServiceImpl());
+
+        List<Tran> tList = ts.getTransactionListByCustomerId(customerId);
+
+        PrintJson.printJsonObj(response,tList);
+    }
 
 
     private void updateRemark(HttpServletRequest request, HttpServletResponse response) {

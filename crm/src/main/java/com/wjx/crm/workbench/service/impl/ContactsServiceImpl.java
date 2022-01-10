@@ -11,6 +11,7 @@ import com.wjx.crm.workbench.dao.ContactsRemarkDao;
 import com.wjx.crm.workbench.dao.CustomerDao;
 import com.wjx.crm.workbench.dao.CustomerRemarkDao;
 import com.wjx.crm.workbench.domain.Contacts;
+import com.wjx.crm.workbench.domain.ContactsRemark;
 import com.wjx.crm.workbench.domain.Customer;
 import com.wjx.crm.workbench.service.ContactsService;
 
@@ -184,6 +185,101 @@ public class ContactsServiceImpl implements ContactsService {
         List<Contacts> cList = contactsDao.getContactsListByName(cname);
 
         return cList;
+    }
+
+    @Override
+    public List<Contacts> getContactsListByCustomerId(String customerId) {
+
+        List<Contacts> cList = contactsDao.getContactsListByCustomerId(customerId);
+
+        return cList;
+    }
+
+    @Override
+    public boolean deleteContacts(String[] ids) {
+
+        boolean flag = true;
+
+        //查询出需要删除的备注的数量
+        int count1 = contactsRemarkDao.getCountByCids(ids);
+
+        //删除备注，返回受影响的条数（实际删除的数量）
+        int count2 = contactsRemarkDao.deleteByCids(ids);
+
+        if (count1!=count2){
+            flag = false;
+        }
+
+        //删除市场活动
+        int count3 = contactsDao.delete(ids);
+        if (count3!=ids.length){
+            flag = false;
+        }
+
+        return flag;
+    }
+
+    @Override
+    public Contacts detail(String id) {
+
+        Contacts c = contactsDao.detail(id);
+
+        return c;
+    }
+
+    @Override
+    public List<ContactsRemark> getRemarkListByCid(String contactsId) {
+
+        List<ContactsRemark> cList = contactsRemarkDao.getRemarkListByCid(contactsId);
+
+        return cList;
+    }
+
+    @Override
+    public boolean saveRemark(ContactsRemark cr) {
+
+        boolean flag = true;
+
+        int count = contactsRemarkDao.saveRemark(cr);
+
+        if (count!=1){
+
+            flag=false;
+
+        }
+
+        return flag;
+    }
+
+    @Override
+    public boolean updateRemark(ContactsRemark cr) {
+
+
+        boolean flag = true;
+
+        int count = contactsRemarkDao.updateRemark(cr);
+
+        if (count!=1){
+
+            flag=false;
+
+        }
+
+        return flag;
+    }
+
+    @Override
+    public boolean deleteRemark(String id) {
+
+        boolean flag = true;
+
+        int count = contactsRemarkDao.deleteRemark(id);
+
+        if (count!=1){
+            flag = false;
+        }
+
+        return flag;
     }
 
 

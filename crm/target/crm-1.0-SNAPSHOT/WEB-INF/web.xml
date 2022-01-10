@@ -102,6 +102,10 @@
         <url-pattern>/workbench/customer/saveRemark.do</url-pattern>
         <url-pattern>/workbench/customer/updateRemark.do</url-pattern>
         <url-pattern>/workbench/customer/getContactsByCustomerId.do</url-pattern>
+        <url-pattern>/workbench/customer/getTransactionListByCustomerId.do</url-pattern>
+        <url-pattern>/workbench/customer/deleteTransaction.do</url-pattern>
+        <url-pattern>/workbench/customer/getContactsListByCustomerId.do</url-pattern>
+        <url-pattern>/workbench/customer/deleteContacts.do</url-pattern>
     </servlet-mapping>
 
     <!--联系人控制器-->

@@ -4,6 +4,40 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.wjx.crm.workbench.dao.TranDao">
+
+    <delete id="delete">
+
+        delete from tbl_tran
+
+        where id in
+
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+
+            #{id}
+
+        </foreach>
+
+    </delete>
+
+    <select id="getTransactionListByCustomerId" resultType="Tran">
+
+        select
+
+        t.id,
+        t.name,
+        t.money,
+        t.stage,
+        t.expectedDate,
+        t.type,
+        c.name as customerId
+
+        from tbl_tran t
+        join tbl_customer c
+        on t.customerId=c.id
+
+        where t.customerId=#{customerId}
+
+    </select>
     
     <insert id="save">
 
