@@ -5,8 +5,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 <!DOCTYPE html>
 <html>
 <head>
-	base href="<%=basePath%>">
-	base href="<%=basePath%>">
+	<base href="<%=basePath%>">
 <meta charset="UTF-8">
 
 <link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
@@ -124,7 +123,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		<h3>更新交易</h3>
 	  	<div style="position: relative; top: -40px; left: 70%;">
 			<button type="button" class="btn btn-primary">更新</button>
-			<button type="button" class="btn btn-default">取消</button>
+			<button type="button" class="btn btn-default" onclick="window.history.back();">取消</button>
 		</div>
 		<hr style="position: relative; top: -40px;">
 	</div>

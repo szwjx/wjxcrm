@@ -5,6 +5,125 @@
 
 <mapper namespace="com.wjx.crm.workbench.dao.TranDao">
 
+    <select id="getTotalByCondition" resultType="int">
+        select count(*)
+
+        from tbl_tran tr
+        left join tbl_user u
+        on u.id=tr.owner
+        left join tbl_customer cus
+        on cus.id=tr.customerId
+        left join tbl_contacts con
+        on con.id=tr.contactsId
+
+        <where>
+            <if test="name != null and name !=''" >
+                tr.name like '%' #{name} '%'
+            </if >
+
+            <if test="customerId != null and customerId !=''" >
+                and  cus.name like '%' #{customerId} '%'
+            </if >
+
+            <if test="owner != null and owner !=''" >
+                and  u.name like '%' #{owner} '%'
+            </if >
+
+            <if test="stage != null and stage !=''" >
+                and  tr.owner like '%' #{stage} '%'
+            </if >
+
+            <if test="type != null and type !=''" >
+                and  tr.type like '%' #{type} '%'
+            </if >
+
+            <if test="source != null and source !=''" >
+                and   tr.source like '%' #{source} '%'
+            </if >
+
+            <if test="contactsId != null and contactsId !=''" >
+                and   con.fullname like '%' #{contactsId} '%'
+            </if >
+        </where>
+    </select>
+
+    <select id="getTranByCondition" resultType="Tran">
+        select
+
+        tr.id,
+        u.name as owner,
+        tr.name,
+        cus.name as customerId,
+        tr.stage,
+        tr.type,
+        tr.source,
+        con.fullname as contactsId
+
+        from tbl_tran  tr
+        left join tbl_user u
+        on tr.owner=u.id
+        left join tbl_customer cus
+        on tr.customerId=cus.id
+        left  join tbl_contacts con
+        on tr.contactsId=con.id
+
+        <where>
+
+            <if test="name != null and name !=''" >
+                tr.name like '%' #{name} '%'
+            </if >
+
+            <if test="customerId != null and customerId !=''" >
+                and  cus.name like '%' #{customerId} '%'
+            </if >
+
+            <if test="owner != null and owner !=''" >
+                and  u.name like '%' #{owner} '%'
+            </if >
+
+            <if test="stage != null and stage !=''" >
+                and  tr.stage like '%' #{stage} '%'
+            </if >
+
+            <if test="type != null and type !=''" >
+                and  tr.type like '%' #{type} '%'
+            </if >
+
+            <if test="source != null and source !=''" >
+                and  tr.source like '%' #{source} '%'
+            </if >
+
+            <if test="contactsId != null and contactsId !=''" >
+                and  con.fullname like '%' #{contactsId} '%'
+            </if >
+
+        </where>
+
+        order  by tr.createTime desc
+        limit #{skipCount},#{pageSize}
+
+    </select>
+
+    <select id="getTransactionListByContactsId" resultType="Tran">
+
+        select
+
+            t.id,
+            t.name,
+            t.money,
+            t.stage,
+            t.expectedDate,
+            t.type,
+            c.name as customerId
+
+        from tbl_tran t
+        join tbl_customer c
+        on t.customerId=c.id
+
+        where t.contactsId=#{contactsId}
+
+    </select>
+
     <delete id="delete">
 
         delete from tbl_tran

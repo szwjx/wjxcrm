@@ -3,16 +3,19 @@ package com.wjx.crm.workbench.service.impl;
 import com.wjx.crm.utils.DateTimeUtil;
 import com.wjx.crm.utils.SqlSessionUtil;
 import com.wjx.crm.utils.UUIDUtil;
+import com.wjx.crm.vo.PaginationVO;
 import com.wjx.crm.workbench.dao.CustomerDao;
 import com.wjx.crm.workbench.dao.TranDao;
 import com.wjx.crm.workbench.dao.TranHistoryDao;
 import com.wjx.crm.workbench.dao.TranRemarkDao;
+import com.wjx.crm.workbench.domain.Activity;
 import com.wjx.crm.workbench.domain.Customer;
 import com.wjx.crm.workbench.domain.Tran;
 import com.wjx.crm.workbench.domain.TranHistory;
 import com.wjx.crm.workbench.service.TranService;
 
 import java.util.List;
+import java.util.Map;
 
 public class TranServiceImpl implements TranService {
 
@@ -132,6 +135,31 @@ public class TranServiceImpl implements TranService {
         }
 
         return flag;
+    }
+
+    @Override
+    public List<Tran> getTransactionListByContactsId(String contactsId) {
+
+        List<Tran> tList = tranDao.getTransactionListByContactsId(contactsId);
+
+        return tList;
+    }
+
+    @Override
+    public PaginationVO<Tran> pageList(Map<String, Object> map) {
+
+        //取得total
+        int total = tranDao.getTotalByCondition(map);
+        //取得dataList
+        List<Tran> dataList = tranDao.getTranByCondition(map);
+        //创建一个vo对象将total和dataList封装到VO
+        PaginationVO<Tran> vo = new PaginationVO<Tran>();
+        vo.setTotal(total);
+        vo.setDataList(dataList);
+
+
+        //返回vo
+        return vo;
     }
 
 

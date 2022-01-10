@@ -6,13 +6,8 @@ import com.wjx.crm.utils.DateTimeUtil;
 import com.wjx.crm.utils.SqlSessionUtil;
 import com.wjx.crm.utils.UUIDUtil;
 import com.wjx.crm.vo.PaginationVO;
-import com.wjx.crm.workbench.dao.ContactsDao;
-import com.wjx.crm.workbench.dao.ContactsRemarkDao;
-import com.wjx.crm.workbench.dao.CustomerDao;
-import com.wjx.crm.workbench.dao.CustomerRemarkDao;
-import com.wjx.crm.workbench.domain.Contacts;
-import com.wjx.crm.workbench.domain.ContactsRemark;
-import com.wjx.crm.workbench.domain.Customer;
+import com.wjx.crm.workbench.dao.*;
+import com.wjx.crm.workbench.domain.*;
 import com.wjx.crm.workbench.service.ContactsService;
 
 import java.util.HashMap;
@@ -29,6 +24,8 @@ public class ContactsServiceImpl implements ContactsService {
 
     private ContactsDao contactsDao = SqlSessionUtil.getSqlSession().getMapper(ContactsDao.class);
     private ContactsRemarkDao contactsRemarkDao = SqlSessionUtil.getSqlSession().getMapper(ContactsRemarkDao.class);
+
+    private  ContactsActivityRelationDao contactsActivityRelationDao = SqlSessionUtil.getSqlSession().getMapper(ContactsActivityRelationDao.class);
 
 
     @Override
@@ -276,6 +273,45 @@ public class ContactsServiceImpl implements ContactsService {
         int count = contactsRemarkDao.deleteRemark(id);
 
         if (count!=1){
+            flag = false;
+        }
+
+        return flag;
+    }
+
+    @Override
+    public boolean bund(String cid, String[] aids) {
+
+
+        boolean flag = true;
+
+        for (String aid:aids){
+
+            //取得每一个aid和cid做关联
+            ContactsActivityRelation car = new ContactsActivityRelation();
+            car.setId(UUIDUtil.getUUID());
+            car.setActivityId(aid);
+            car.setContactsId(cid);
+
+            //添加关联关系表中的记录
+            int count = contactsActivityRelationDao.bund(car);
+            if (count!=1){
+                flag = false;
+            }
+        }
+
+        return flag;
+    }
+
+    @Override
+    public boolean unbund(String id) {
+
+        boolean flag = true;
+
+        int count = contactsActivityRelationDao.unbund(id);
+
+        if (count!=1){
+
             flag = false;
         }
 

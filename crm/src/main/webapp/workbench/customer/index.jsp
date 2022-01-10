@@ -349,7 +349,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 	function pageList(pageNo,pageSize) {
 
 		//重新刷新线索区域是将全选框取消勾选
-		//$("#qx").prop("checked",false);
+		$("#qx").prop("checked",false);
 
 		//查询前，将隐藏域中的信息取出来，重新赋予到搜索框
 		$("#search-name").val($.trim($("#hidden-name").val())),

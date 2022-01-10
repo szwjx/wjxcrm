@@ -127,6 +127,12 @@
         <url-pattern>/workbench/contacts/deleteRemark.do</url-pattern>
         <url-pattern>/workbench/contacts/saveRemark.do</url-pattern>
         <url-pattern>/workbench/contacts/updateRemark.do</url-pattern>
+        <url-pattern>/workbench/contacts/getTransactionListByContactsId.do</url-pattern>
+        <url-pattern>/workbench/contacts/deleteTransaction.do</url-pattern>
+        <url-pattern>/workbench/contacts/getActivityListByNameAndNoContactsId.do</url-pattern>
+        <url-pattern>/workbench/contacts/bund.do</url-pattern>
+        <url-pattern>/workbench/contacts/getActivityListByContactsId.do</url-pattern>
+        <url-pattern>/workbench/contacts/unbund.do</url-pattern>
     </servlet-mapping>
 
     <!--交易控制器-->
@@ -141,5 +147,6 @@
         <url-pattern>/workbench/transaction/getContactsListByName.do</url-pattern>
         <url-pattern>/workbench/transaction/getCustomerName.do</url-pattern>
         <url-pattern>/workbench/transaction/save.do</url-pattern>
+        <url-pattern>/workbench/transaction/pageList.do</url-pattern>
     </servlet-mapping>
 </web-app>

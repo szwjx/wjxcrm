@@ -47,7 +47,47 @@ public class TranController extends HttpServlet {
             getCustomerName(request,response);
         }else  if("/workbench/transaction/save.do".equals(path)){
             save(request,response);
+        }else  if("/workbench/transaction/pageList.do".equals(path)){
+            pageList(request,response);
         }
+    }
+
+    private void pageList(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("查询交易信息列表（结合条件查询和分页查询）");
+
+        String name = request.getParameter("name");
+        String owner = request.getParameter("owner");
+        String customerId = request.getParameter("customerId");
+        String stage = request.getParameter("stage");
+        String type = request.getParameter("type");
+        String source = request.getParameter("source");
+        String contactsId = request.getParameter("contactsId");
+        String pageNoStr = request.getParameter("pageNo");
+        int pageNo = Integer.valueOf(pageNoStr);
+        //每页展现的记录数
+        String pageSizeStr = request.getParameter("pageSize");
+        int pageSize = Integer.valueOf(pageSizeStr);
+        //计算略过的记录数
+        int skipCount = (pageNo-1)*pageSize;
+
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("name",name);
+        map.put("owner",owner);
+        map.put("customerId",customerId);
+        map.put("stage",stage);
+        map.put("type",type);
+        map.put("source",source);
+        map.put("contactsId",contactsId);
+        map.put("pageSize",pageSize);
+        map.put("skipCount",skipCount);
+
+        TranService ts = (TranService) ServiceFactory.getService(new TranServiceImpl());
+
+        PaginationVO<Tran> vo = ts.pageList(map);
+
+        //自动把vo--->{"total":100,"dataList":[{交易1},{2},{3}]}
+        PrintJson.printJsonObj(response,vo);
     }
 
 

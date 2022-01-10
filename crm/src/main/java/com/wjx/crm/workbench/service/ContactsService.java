@@ -37,4 +37,8 @@ public interface ContactsService {
     boolean updateRemark(ContactsRemark cr);
 
     boolean deleteRemark(String id);
+
+    boolean bund(String cid, String[] aids);
+
+    boolean unbund(String id);
 }

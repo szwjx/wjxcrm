@@ -1,7 +1,13 @@
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.Set" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
 String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 	request.getServerPort() + request.getContextPath() + "/";
+
+	Map<String,String> pmap = (Map<String, String>) application.getAttribute("pmap");
+
+	Set<String> set = pmap.keySet();
 %>
 <!DOCTYPE html>
 <html>
@@ -22,6 +28,21 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 	<script type="text/javascript" src="jquery/bs_typeahead/bootstrap3-typeahead.min.js"></script>
 
 <script type="text/javascript">
+
+	var json = {
+
+		<%
+            for (String key:set){
+                String value = pmap.get(key);
+        %>
+
+		"<%=key%>" : <%=value%>,
+
+		<%
+            }
+
+        %>
+	};
 
 	//默认情况下取消和保存按钮是隐藏的
 	var cancelAndSaveBtnDefault = true;
@@ -364,6 +385,191 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 		})
 
+		//页面加载完毕后，展现该客户关联的交易
+		showTransactionList();
+
+		//为删除交易模态窗口的删除按钮绑定事件
+		$("#deleteTransaction").click(function () {
+
+			$.ajax({
+				url : "workbench/contacts/deleteTransaction.do",
+				data : {
+
+					"id":$("#deleteTranId").val()
+
+				},
+				type : "post",
+				dataType : "json",
+				success : function (data) {
+
+					/*
+                        data
+                            {"success":true/false}
+                     */
+					if (data.success){
+
+						$("#removeTransactionModal").modal("hide");
+						//刷新交易列表
+						showTransactionList();
+
+					}else {
+						alert("删除交易失败")
+					}
+
+				}
+			})
+
+		})
+
+		//为关联市场活动模态窗口中的搜索绑定键盘单击事件
+		$("#aname").keydown(function (event) {
+
+			//如果是回车键
+			if (event.keyCode==13){
+
+				//alert("查询并关联市场活动");
+
+				$.ajax({
+					url : "workbench/contacts/getActivityListByNameAndNoContactsId.do",
+					data : {
+
+						"aname" : $.trim($("#aname").val()),
+						"contactsId" : "${c.id}"
+
+					},
+					type : "get",
+					dataType : "json",
+					success : function (data) {
+
+						/*
+							data
+								[{市场活动1}，{2}，{3}]
+						 */
+						var html = "";
+
+						$.each(data,function (i,n) {
+
+							html += '<tr>';
+							html += '<td><input type="checkbox" name="xz" value="'+n.id+'"/></td>';
+							html += '<td>'+n.name+'</td>';
+							html += '<td>'+n.startDate+'</td>';
+							html += '<td>'+n.endDate+'</td>';
+							html += '<td>'+n.owner+'</td>';
+							html += '</tr>';
+						})
+
+						$("#activitySearchBody").html(html);
+
+					}
+				})
+
+				/*
+					模态窗口默认的回车行为会刷新当前模态窗口，所以要禁用掉
+				 */
+				return false;
+			}
+
+		})
+
+		//为全选的复选框绑定事件，触发全选操作
+		$("#qx").click(function () {
+
+			$("input[name=xz]").prop("checked",this.checked)
+
+		})
+		$("#activitySearchBody").on("click",$("input[name=xz]"),function () {
+
+			$("#qx").prop("checked",$("input[name=xz]").length==$("input[name=xz]:checked").length);
+
+		})
+		//为关联按钮绑定事件，执行关联表的添加操作
+		$("#bundBtn").click(function () {
+
+			var $xz = $("input[name=xz]:checked");
+
+			if ($xz.length==0){
+				alert("请选择要关联的活动");
+			}else {
+				var param = "cid=${c.id}&";
+
+				for (var i = 0;i<$xz.length;i++){
+
+					param += "aid="+$($xz[i]).val();
+
+					if (i<$xz.length-1){
+						param +="&";
+					}
+				}
+
+				//alert(param);
+				$.ajax({
+					url : "workbench/contacts/bund.do",
+					data : param,
+					type : "post",
+					dataType : "json",
+					success : function (data) {
+						/*
+							data
+								["success":true/false]
+						 */
+						if (data.success){
+
+							//关联成功
+							//刷新关联市场活动的列表
+							showActivityList();
+							//清除搜索框内的信息，清空activitySearchBody中的内容，去掉复选框中的√
+							$("#aname").val("");
+							$("#activityTable tbody").html("");
+							$("#qx").prop("checked",false);
+
+							//关闭模态窗口
+							$("#bundActivityModal").modal("hide");
+						}else {
+							alert("关联市场活动失败")
+						}
+
+					}
+				})
+			}
+
+		})
+
+		showActivityList();
+
+		//为解除关联按钮绑定事件解除与联系人的关联
+		$("#unbundBtn").click(function () {
+
+			$.ajax({
+				url : "workbench/contacts/unbund.do",
+				data : {
+
+					"id":$("#unbundId").val()
+
+				},
+				type : "post",
+				dataType : "json",
+				success : function (data) {
+
+					/*
+                        data
+                            {"success":true/false}
+                     */
+					if (data.success){
+
+						$("#unbundActivityModal").modal("hide");
+
+						//刷新市场活动列表
+						showActivityList();
+
+					}else {
+						alert("解除关联失败")
+					}
+
+				}
+			})
+
+		})
+
 	});
 
 	function showRemarkList() {
@@ -481,13 +687,141 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		$("#editRemarkModal").modal("show");
 
 	}
+
+	function showTransactionList() {
+
+		$.ajax({
+
+			url : "workbench/contacts/getTransactionListByContactsId.do",
+			data : {
+
+				"contactsId" : "${c.id}"
+
+			},
+			type : "get",
+			dataType : "json",
+			success : function (data) {
+
+				/*
+
+                    data
+                        [{备注1},{2},{3}]
+
+
+                 */
+
+				var html = "";
+
+				$.each(data,function (i,n) {
+
+					/*
+                        javascript:void(0);
+                            将超链接禁用，只能以触发事件的形式来操作
+                     */
+					var stage = n.stage;
+					var possibility = json[stage];
+
+					html += '<tr>';
+					html += '<td><a href="workbench/transaction/detail.jsp" style="text-decoration: none;">'+n.customerId+'-'+n.name+'</a></td>';
+					html += '<td>'+n.money+'</td>';
+					html += '<td>'+stage+'</td>';
+					html += '<td>'+possibility+'</td>';
+					html += '<td>'+n.expectedDate+'</td>';
+					html += '<td>'+n.type+'</td>';
+					html += '<td><a href="javascript:void(0);" onclick="deleteTranModal(\''+n.id+'\')" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>';
+					html += '</tr>';
+
+				})
+
+				$("#transactionBody").html(html);
+
+			}
+
+		})
+	}
+
+	function deleteTranModal(id) {
+
+		$("#deleteTranId").val(id);
+
+		$("#removeTransactionModal").modal("show");
+
+
+	}
+
+	function showActivityList() {
+
+		$.ajax({
+			url : "workbench/contacts/getActivityListByContactsId.do",
+			data : {
+
+				"contactsId":"${c.id}"
+
+			},
+			type : "get",
+			dataType : "json",
+			success : function (data) {
+
+				/*
+					data
+						[{市场活动1}，{2}，{3}]
+				 */
+
+				var html = "";
+				$.each(data,function (i,n) {
+
+					html += '<tr>';
+					html += '<td>'+n.name+'</td>';
+					html += '<td>'+n.startDate+'</td>';
+					html += '<td>'+n.endDate+'</td>';
+					html += '<td>'+n.owner+'</td>';
+					html += '<td><a href="javascript:void(0);"  onclick="unbund(\''+n.id+'\')" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>';
+					html += '</tr>';
+				})
+
+				$("#activityBody").html(html);
+
+			}
+		})
+
+	}
+
+	function unbund(id) {
+
+		$("#unbundId").val(id);
+
+		$("#unbundActivityModal").modal("show");
+
+	}
 	
 </script>
 
 </head>
 <body>
 
-	<!-- 修改联系人备注的模态窗口 -->
+	<%--    <!-- 删除交易的模态窗口 -->--%>
+	<div class="modal fade" id="removeTransactionModal" role="dialog">
+	<div class="modal-dialog" role="document" style="width: 30%;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">×</span>
+				</button>
+				<h4 class="modal-title">删除交易</h4>
+			</div>
+			<div class="modal-body">
+				<p>您确定要删除该交易吗？</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" id="deleteTransaction">删除</button>
+			</div>
+			<input type="hidden" id="deleteTranId">
+		</div>
+	</div>
+</div>
+
+<%--	<!-- 修改联系人备注的模态窗口 -->--%>
 	<div class="modal fade" id="editRemarkModal" role="dialog">
 	<%-- 备注的id --%>
 	<input type="hidden" id="remarkId">
@@ -532,13 +866,14 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-danger" data-dismiss="modal">解除</button>
+					<button type="button" class="btn btn-danger" id="unbundBtn">解除</button>
 				</div>
+				<input type="hidden" id="unbundId">
 			</div>
 		</div>
 	</div>
 	
-	<!-- 联系人和市场活动关联的模态窗口 -->
+<%--	<!-- 联系人和市场活动关联的模态窗口 -->--%>
 	<div class="modal fade" id="bundActivityModal" role="dialog">
 		<div class="modal-dialog" role="document" style="width: 80%;">
 			<div class="modal-content">
@@ -552,7 +887,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 					<div class="btn-group" style="position: relative; top: 18%; left: 8px;">
 						<form class="form-inline" role="form">
 						  <div class="form-group has-feedback">
-						    <input type="text" class="form-control" style="width: 300px;" placeholder="请输入市场活动名称，支持模糊查询">
+						    <input type="text" class="form-control" id="aname" style="width: 300px;" placeholder="请输入市场活动名称，支持模糊查询">
 						    <span class="glyphicon glyphicon-search form-control-feedback"></span>
 						  </div>
 						</form>
@@ -560,7 +895,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 					<table id="activityTable2" class="table table-hover" style="width: 900px; position: relative;top: 10px;">
 						<thead>
 							<tr style="color: #B3B3B3;">
-								<td><input type="checkbox"/></td>
+								<td><input type="checkbox" id="qx"/></td>
 								<td>名称</td>
 								<td>开始日期</td>
 								<td>结束日期</td>
@@ -568,8 +903,8 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 								<td></td>
 							</tr>
 						</thead>
-						<tbody>
-							<tr>
+						<tbody id="activitySearchBody">
+							<%--<tr>
 								<td><input type="checkbox"/></td>
 								<td>发传单</td>
 								<td>2020-10-10</td>
@@ -582,13 +917,13 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 								<td>2020-10-10</td>
 								<td>2020-10-20</td>
 								<td>zhangsan</td>
-							</tr>
+							</tr>--%>
 						</tbody>
 					</table>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">关联</button>
+					<button type="button" class="btn btn-primary" id="bundBtn">关联</button>
 				</div>
 			</div>
 		</div>
@@ -766,7 +1101,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			<div style="width: 300px; color: gray;">客户名称</div>
 			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${c.customerId}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">姓名</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${c.fullname}${c.appellation}</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${c.fullname}</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>
@@ -893,8 +1228,8 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<td></td>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
+					<tbody id="transactionBody">
+						<%--<tr>
 							<td><a href="transaction/detail.html" style="text-decoration: none;">动力节点-交易01</a></td>
 							<td>5,000</td>
 							<td>谈判/复审</td>
@@ -902,13 +1237,13 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<td>2017-02-07</td>
 							<td>新业务</td>
 							<td><a href="javascript:void(0);" data-toggle="modal" data-target="#unbundModal" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>
-						</tr>
+						</tr>--%>
 					</tbody>
 				</table>
 			</div>
 			
 			<div>
-				<a href="transaction/save.html" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>新建交易</a>
+				<a href="workbench/transaction/getUserList.do" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>新建交易</a>
 			</div>
 		</div>
 	</div>
@@ -930,14 +1265,14 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 							<td></td>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
+					<tbody id="activityBody">
+						<%--<tr>
 							<td><a href="activity/detail.jsp" style="text-decoration: none;">发传单</a></td>
 							<td>2020-10-10</td>
 							<td>2020-10-20</td>
 							<td>zhangsan</td>
 							<td><a href="javascript:void(0);" data-toggle="modal" data-target="#unbundActivityModal" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>解除关联</a></td>
-						</tr>
+						</tr>--%>
 					</tbody>
 				</table>
 			</div>

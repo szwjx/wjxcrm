@@ -293,7 +293,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 						location.reload();
 
 						//关闭修改操作的模态窗口
-						$("#editActivityModal").modal("hide");
+						$("#editClueModal").modal("hide");
 					}else{
 
 						alert("修改市场活动失败");

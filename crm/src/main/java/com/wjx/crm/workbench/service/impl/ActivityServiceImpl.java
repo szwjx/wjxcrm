@@ -190,5 +190,21 @@ public class ActivityServiceImpl implements ActivityService {
         return aList;
     }
 
+    @Override
+    public List<Activity> getActivityListByNameAndNoContactsId(Map<String, String> map) {
+
+        List<Activity> aList = activityDao.getActivityListByNameAndNoContactsId(map);
+
+        return aList;
+    }
+
+    @Override
+    public List<Activity> getActivityListByContactsId(String contactsId) {
+
+        List<Activity> aList = activityDao.getActivityListByContactsId(contactsId);
+
+        return aList;
+    }
+
 
 }
