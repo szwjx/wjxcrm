@@ -26,14 +26,109 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 	$(function(){
 
 		pageList(1,2);
-		
-		
+
+		//为查询按钮绑定事件，触发pageList方法
+		$("#searchBtn").click(function () {
+			/*
+			* 点击查询按钮时，应该将搜索框中的信息保存起来，保存到隐藏域中
+			* */
+			$("#hidden-name").val($.trim($("#search-name").val())),
+			$("#hidden-owner").val($.trim($("#search-owner").val())),
+			$("#hidden-customerId").val($.trim($("#search-phone").val())),
+			$("#hidden-stage").val($.trim($("#search-stage").val())),
+			$("#hidden-type").val($.trim($("#search-type").val())),
+			$("#hidden-source").val($.trim($("#search-source").val())),
+			$("#hidden-contactsId").val($.trim($("#search-contactsId").val())),
+
+			pageList(1 ,$("#transactionPage").bs_pagination('getOption', 'rowsPerPage'));
+		});
+
+		//为全选的复选框绑定事件，触发全选操作
+		$("#qx").click(function () {
+
+			$("input[name=xz]").prop("checked",this.checked)
+
+		})
+
+		$("#transactionBody").on("click",$("input[name=xz]"),function () {
+
+			$("#qx").prop("checked",$("input[name=xz]").length==$("input[name=xz]:checked").length);
+
+		})
+
+		//修改按钮
+		$("#editBtn").click(function () {
+			var $xz = $("input[name=xz]:checked")
+			if ($xz.length == 0) {
+				alert("请选择你要修改的交易")
+			} else if ($xz.length > 1) {
+				alert("每次修改只能选择一个交易")
+			}else {
+				window.location.href='workbench/transaction/edit.do?id='+$('input[name=xz]:checked').val()+'';
+			}
+		})
+
+		//为删除按钮绑定事件，执行交易删除操作
+		$("#deleteBtn").click(function () {
+
+			//找到所有被选中的复选框的jquery对象
+			var $xz = $("input[name=xz]:checked");
+
+			if ($xz.length==0){
+				alert("请选择要删除的记录");
+				//选择了有可能是一条有可能是多条
+			}else {
+
+				if (confirm("确认删除所选中的记录吗？")){
+
+					//url:workbench/transactin/delete.do?id=xxx&id=xxx&id=xxx
+					//拼接参数
+					var param = "";
+
+					//将$xz中的每一个dom对象遍历出来，取其value值就相当于取出了id值
+					for (i = 0;i<$xz.length;i++){
+						param += "id="+ $($xz[i]).val();
+
+						//如果不是最后一个元素，在其后加&符
+						if (i<$xz.length-1){
+							param += "&";
+						}
+					}
+					//alert(param);
+
+					$.ajax({
+						url : "workbench/transaction/delete.do",
+						data : param,
+						type : "post",
+						dataType : "json",
+						success : function (data) {
+							/*
+                            * data
+                            *   {"success":true/false}
+                            * */
+							if (data.success){
+								//删除成功
+								//回到第一页，维持每页展现的记录数
+								pageList(1,$("#transactionPage").bs_pagination('getOption', 'rowsPerPage'));
+							}else {
+								alert("删除交易失败！")
+							}
+						}
+					})
+				}
+
+			}
+
+		})
+
+
+
 	});
 
 	function pageList(pageNo,pageSize) {
 
 		//重新刷新线索区域是将全选框取消勾选
-		//$("#qx").prop("checked",false);
+		$("#qx").prop("checked",false);
 
 		//查询前，将隐藏域中的信息取出来，重新赋予到搜索框
 		$("#search-name").val($.trim($("#hidden-name").val())),
@@ -75,12 +170,12 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
                          */
 						var html = "";
 
-						//每一个n就代表一个客户对象
+						//每一个n就代表一个交易对象
 						$.each(data.dataList,function (i,n) {
 
 							html += '<tr>';
 							html += '<td><input type="checkbox" name="xz" value="'+n.id+'" /></td>';
-							html += '<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench/transaction/detail.do?id='+n.id+'\';">'+n.customerId+'-'+n.name+'</a></td>';
+							html += '<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench/transaction/detail.do?id='+n.id+'\';">'+n.name+'</a></td>';
 							html += '<td>'+n.customerId+'</td>';
 							html += '<td>'+n.stage+'</td>';
 							html += '<td>'+n.type+'</td>';
@@ -247,8 +342,8 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 10px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" onclick="window.location.href='workbench/transaction/getUserList.do';"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" onclick="window.location.href='workbench/transaction/edit.jsp';"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button type="button" class="btn btn-default" id="editBtn" ><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button type="button" class="btn btn-danger" id="deleteBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				
 				
@@ -257,7 +352,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 				<table class="table table-hover">
 					<thead>
 						<tr style="color: #B3B3B3;">
-							<td><input type="checkbox" /></td>
+							<td><input type="checkbox" id="qx" /></td>
 							<td>名称</td>
 							<td>客户名称</td>
 							<td>阶段</td>

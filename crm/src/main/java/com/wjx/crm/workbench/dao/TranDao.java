@@ -18,4 +18,12 @@ public interface TranDao {
     int getTotalByCondition(Map<String, Object> map);
 
     List<Tran> getTranByCondition(Map<String, Object> map);
+
+    Tran getTranById(String id);
+
+    boolean update(Tran t);
+
+    Tran getAidAndCidByTid(String id);
+
+    Tran detail(String id);
 }

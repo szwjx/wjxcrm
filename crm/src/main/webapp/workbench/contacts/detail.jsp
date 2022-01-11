@@ -1109,7 +1109,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 			<div style="width: 300px; color: gray;">邮箱</div>
 			<div style="width: 300px;position: relative; left: 200px; top: -20px;"><b>${c.email}</b></div>
 			<div style="width: 300px;position: relative; left: 450px; top: -40px; color: gray;">手机</div>
-			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${c.mphone}</b></div>
+			<div style="width: 300px;position: relative; left: 650px; top: -60px;"><b>${c.mphone}&nbsp;</b></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px;"></div>
 			<div style="height: 1px; width: 400px; background: #D5D5D5; position: relative; top: -60px; left: 450px;"></div>
 		</div>

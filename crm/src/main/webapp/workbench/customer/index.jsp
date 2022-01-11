@@ -210,7 +210,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 								//回到第一页，维持每页展现的记录数
 								pageList(1,$("#customerPage").bs_pagination('getOption', 'rowsPerPage'));
 							}else {
-								alert("删除市场活动失败！")
+								alert("删除客户失败！")
 							}
 						}
 					})
@@ -220,7 +220,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 		})
 
-		//为修改按钮绑定事件，执行修改市场活动操作
+		//为修改按钮绑定事件，进入修改窗口
 		$("#editBtn").click(function () {
 
 			$(".time").datetimepicker({

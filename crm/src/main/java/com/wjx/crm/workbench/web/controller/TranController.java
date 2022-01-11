@@ -18,6 +18,7 @@ import com.wjx.crm.workbench.service.impl.ContactsServiceImpl;
 import com.wjx.crm.workbench.service.impl.CustomerServiceImpl;
 import com.wjx.crm.workbench.service.impl.TranServiceImpl;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +50,130 @@ public class TranController extends HttpServlet {
             save(request,response);
         }else  if("/workbench/transaction/pageList.do".equals(path)){
             pageList(request,response);
+        }else  if("/workbench/transaction/edit.do".equals(path)){
+            edit(request,response);
+        }else  if("/workbench/transaction/update.do".equals(path)){
+            update(request,response);
+        }else  if("/workbench/transaction/delete.do".equals(path)){
+            delete(request,response);
+        }else  if("/workbench/transaction/detail.do".equals(path)){
+            detail(request,response);
         }
+    }
+
+    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        System.out.println("跳转到详细信息页操作");
+
+        String id = request.getParameter("id");
+
+        TranService ts = (TranService) ServiceFactory.getService(new TranServiceImpl());
+
+         Tran t = ts.detail(id);
+
+
+          //      处理可能性
+         String stage = t.getStage();
+         //ServletContext appllication = this.getServletContext();
+        Map<String,String> pmap = (Map<String, String>) this.getServletContext().getAttribute("pmap");
+        String possibility = pmap.get(stage);
+         //或者
+        //ServletContext appllication1 = request.getServletContext();
+        //ServletContext appllication2 = this.getServletConfig.getServletContext();
+
+        t.setPossibility(possibility);//这里是在Tran中扩充了possibility字段
+
+         request.setAttribute("t",t);
+        //request.setAttribute("possibility",possibility);
+         request.getRequestDispatcher("/workbench/transaction/detail.jsp").forward(request,response);
+    }
+
+    private void delete(HttpServletRequest request, HttpServletResponse response) {
+
+        System.out.println("删除交易操作");
+
+        String[] ids = request.getParameterValues("id");
+
+        TranService ts = (TranService) ServiceFactory.getService(new TranServiceImpl());
+
+        boolean flag = ts.deleteTransaction(ids);
+
+        PrintJson.printJsonFlag(response,flag);
+    }
+
+    private void update(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        System.out.println("执行交易修改操作");
+
+        String id = request.getParameter("id");
+        String owner = request.getParameter("owner");
+        String money = request.getParameter("money");
+        String name = request.getParameter("name");
+        String expectedDate = request.getParameter("expectedDate");
+        String customerId = request.getParameter("customerId");
+        String stage = request.getParameter("stage");
+        String type = request.getParameter("type");
+        String source = request.getParameter("source");
+        String activityId = request.getParameter("activityId");
+        String contactsId = request.getParameter("contactsId");
+        //修改时间，当前系统时间
+        String editTime = DateTimeUtil.getSysTime();
+        //修改人，当前登录用户
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+        String description = request.getParameter("description");
+        String contactSummary = request.getParameter("contactSummary");
+        String nextContactTime = request.getParameter("nextContactTime");
+
+        Tran t = new Tran();
+        t.setId(id);
+        t.setOwner(owner);
+        t.setMoney(money);
+        t.setName(name);
+        t.setExpectedDate(expectedDate);
+        t.setStage(stage);
+        t.setType(type);
+        t.setSource(source);
+        t.setEditTime(editTime);
+        t.setEditBy(editBy);
+        t.setContactSummary(contactSummary);
+        t.setDescription(description);
+        t.setNextContactTime(nextContactTime);
+        t.setCustomerId(customerId);
+        t.setContactsId(contactsId);
+        t.setActivityId(activityId);
+
+        TranService ts = (TranService) ServiceFactory.getService(new TranServiceImpl());
+
+        boolean flag = ts.update(t);
+
+        //PrintJson.printJsonFlag(response,flag);
+        response.sendRedirect(request.getContextPath() + "/workbench/transaction/index.jsp");
+    }
+
+    private void edit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        System.out.println("跳转到修改交易页面操作");
+
+        String id = request.getParameter("id");
+
+        //获得所有者下拉框里的内容
+        UserService userService= (UserService) ServiceFactory.getService(new UserServiceImpl());
+        List<User> uList=userService.getUserList();
+        request.setAttribute("uList",uList);
+
+        //获得当前修改交易的详细信息
+        TranService ts = (TranService) ServiceFactory.getService(new TranServiceImpl());
+        Tran t = ts.getTranById(id);
+        request.setAttribute("t",t);
+
+        //获得当前交易的活动名称和联系人id
+        TranService ts1 = (TranService) ServiceFactory.getService(new TranServiceImpl());
+        Tran t1 = ts1.getAidAndCidByTid(id);
+        request.setAttribute("t1",t1);
+
+
+        request.getRequestDispatcher("/workbench/transaction/edit.jsp").forward(request,response);
+
     }
 
     private void pageList(HttpServletRequest request, HttpServletResponse response) {
@@ -89,7 +213,6 @@ public class TranController extends HttpServlet {
         //自动把vo--->{"total":100,"dataList":[{交易1},{2},{3}]}
         PrintJson.printJsonObj(response,vo);
     }
-
 
     private void save(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -136,6 +259,8 @@ public class TranController extends HttpServlet {
         if (flag){
 
             //如果添加交易成功，重定向跳转到列表页
+            //这里只能使用重定向。因为若是使用请求转发，跳到index页面。但是地址栏仍旧是现在的save。do.然后你再刷新页面的
+            //时候，它仍旧会进行save的操作，导致重复保存交易
             response.sendRedirect(request.getContextPath() + "/workbench/transaction/index.jsp");
 
             //一般request域存值用转发，而且转发路径会保留在老路径。。。。/save.do上，因此不使用转发

@@ -20,7 +20,18 @@ public class Tran {
 	private String description;
 	private String contactSummary;	//联系纪要
 	private String nextContactTime;	//下次联系时间
-	
+
+	//扩充一个可能性，为交易详细信息操作使用
+	private String possibility;
+
+	public String getPossibility() {
+		return possibility;
+	}
+
+	public void setPossibility(String possibility) {
+		this.possibility = possibility;
+	}
+
 	public String getId() {
 		return id;
 	}

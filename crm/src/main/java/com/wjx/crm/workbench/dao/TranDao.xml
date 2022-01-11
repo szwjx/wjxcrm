@@ -5,20 +5,126 @@
 
 <mapper namespace="com.wjx.crm.workbench.dao.TranDao">
 
+    <select id="detail" resultType="Tran">
+
+        select
+
+            t.id,
+            u.name as owner,
+            t.money,
+            t.name,
+            t.expectedDate,
+            cus.name as customerId,
+            t.stage,
+            t.type,
+            t.source,
+            a.name as activityId,
+            con.fullname as contactsId,
+            t.createBy,
+            t.createTime,
+            t.editBy,
+            t.editTime,
+            t.description,
+            t.contactSummary,
+            t.nextContactTime
+
+        from tbl_tran t
+        left join tbl_user u
+        on u.id=t.owner
+        left join tbl_customer cus
+        on cus.id=t.customerId
+        left join tbl_contacts con
+        on con.id=t.contactsId
+        left join tbl_activity a
+        on t.activityId=a.id
+
+        where t.id=#{id}
+
+    </select>
+
+    <update id="update">
+
+        update tbl_tran set
+
+            id=#{id},
+            owner=#{owner},
+            money=#{money},
+            name=#{name},
+            expectedDate=#{expectedDate},
+            customerId=#{customerId},
+            stage=#{stage},
+            type=#{type},
+            source=#{source},
+            activityId=#{activityId},
+            contactsId=#{contactsId},
+            editBy=#{editBy},
+            editTime=#{editTime},
+            description=#{description},
+            contactSummary=#{contactSummary},
+            nextContactTime=#{nextContactTime}
+
+        where id=#{id}
+
+
+    </update>
+
+    <select id="getAidAndCidByTid" resultType="Tran">
+
+        select * from tbl_tran where id=#{id}
+
+    </select>
+
+    <select id="getTranById" resultType="Tran">
+
+        select
+
+            t.id,
+            u.name as owner,
+            t.money,
+            t.name,
+            t.expectedDate,
+            cus.name as customerId,
+            t.stage,
+            t.type,
+            t.source,
+            a.name as activityId,
+            con.fullname as contactsId,
+            t.createBy,
+            t.createTime,
+            t.editBy,
+            t.editTime,
+            t.description,
+            t.contactSummary,
+            t.nextContactTime
+
+
+        from tbl_tran t
+        left join tbl_user u
+        on u.id=t.owner
+        left join tbl_customer cus
+        on cus.id=t.customerId
+        left join tbl_contacts con
+        on con.id=t.contactsId
+        left join tbl_activity a
+        on t.activityId=a.id
+        where t.id=#{id}
+
+    </select>
+
     <select id="getTotalByCondition" resultType="int">
         select count(*)
 
-        from tbl_tran tr
+        from tbl_tran t
         left join tbl_user u
-        on u.id=tr.owner
+        on u.id=t.owner
         left join tbl_customer cus
-        on cus.id=tr.customerId
+        on cus.id=t.customerId
         left join tbl_contacts con
-        on con.id=tr.contactsId
+        on con.id=t.contactsId
 
         <where>
             <if test="name != null and name !=''" >
-                tr.name like '%' #{name} '%'
+                t.name like '%' #{name} '%'
             </if >
 
             <if test="customerId != null and customerId !=''" >
@@ -30,15 +136,15 @@
             </if >
 
             <if test="stage != null and stage !=''" >
-                and  tr.owner like '%' #{stage} '%'
+                and  t.owner like '%' #{stage} '%'
             </if >
 
             <if test="type != null and type !=''" >
-                and  tr.type like '%' #{type} '%'
+                and  t.type like '%' #{type} '%'
             </if >
 
             <if test="source != null and source !=''" >
-                and   tr.source like '%' #{source} '%'
+                and   t.source like '%' #{source} '%'
             </if >
 
             <if test="contactsId != null and contactsId !=''" >
@@ -50,27 +156,27 @@
     <select id="getTranByCondition" resultType="Tran">
         select
 
-        tr.id,
+        t.id,
         u.name as owner,
-        tr.name,
+        t.name,
         cus.name as customerId,
-        tr.stage,
-        tr.type,
-        tr.source,
+        t.stage,
+        t.type,
+        t.source,
         con.fullname as contactsId
 
-        from tbl_tran  tr
-        left join tbl_user u
-        on tr.owner=u.id
-        left join tbl_customer cus
-        on tr.customerId=cus.id
-        left  join tbl_contacts con
-        on tr.contactsId=con.id
+        from tbl_tran  t
+        join tbl_user u
+        on t.owner=u.id
+        join tbl_customer cus
+        on t.customerId=cus.id
+        join tbl_contacts con
+        on t.contactsId=con.id
 
         <where>
 
             <if test="name != null and name !=''" >
-                tr.name like '%' #{name} '%'
+                t.name like '%' #{name} '%'
             </if >
 
             <if test="customerId != null and customerId !=''" >
@@ -82,15 +188,15 @@
             </if >
 
             <if test="stage != null and stage !=''" >
-                and  tr.stage like '%' #{stage} '%'
+                and  t.stage like '%' #{stage} '%'
             </if >
 
             <if test="type != null and type !=''" >
-                and  tr.type like '%' #{type} '%'
+                and  t.type like '%' #{type} '%'
             </if >
 
             <if test="source != null and source !=''" >
-                and  tr.source like '%' #{source} '%'
+                and  t.source like '%' #{source} '%'
             </if >
 
             <if test="contactsId != null and contactsId !=''" >
@@ -99,7 +205,7 @@
 
         </where>
 
-        order  by tr.createTime desc
+        order  by t.createTime desc
         limit #{skipCount},#{pageSize}
 
     </select>
@@ -117,7 +223,7 @@
             c.name as customerId
 
         from tbl_tran t
-        join tbl_customer c
+        left join tbl_customer c
         on t.customerId=c.id
 
         where t.contactsId=#{contactsId}
@@ -151,7 +257,7 @@
         c.name as customerId
 
         from tbl_tran t
-        join tbl_customer c
+        left join tbl_customer c
         on t.customerId=c.id
 
         where t.customerId=#{customerId}

@@ -257,7 +257,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 			})
 
-			//为提交（市场活动）按钮绑定事件，填充联系人源，（填写两项信息 名字+id）
+			//为提交（联系人）按钮绑定事件，填充联系人源，（填写两项信息 名字+id）
 			$("#submitContactsBtn").click(function () {
 
 				//取得选中市场活动的id

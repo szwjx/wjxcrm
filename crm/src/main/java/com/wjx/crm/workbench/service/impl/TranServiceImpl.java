@@ -8,7 +8,6 @@ import com.wjx.crm.workbench.dao.CustomerDao;
 import com.wjx.crm.workbench.dao.TranDao;
 import com.wjx.crm.workbench.dao.TranHistoryDao;
 import com.wjx.crm.workbench.dao.TranRemarkDao;
-import com.wjx.crm.workbench.domain.Activity;
 import com.wjx.crm.workbench.domain.Customer;
 import com.wjx.crm.workbench.domain.Tran;
 import com.wjx.crm.workbench.domain.TranHistory;
@@ -160,6 +159,38 @@ public class TranServiceImpl implements TranService {
 
         //返回vo
         return vo;
+    }
+
+    @Override
+    public Tran getTranById(String id) {
+
+        Tran t = tranDao.getTranById(id);
+
+        return t;
+    }
+
+    @Override
+    public boolean update(Tran t) {
+
+         boolean flag = tranDao.update(t);
+
+        return flag;
+    }
+
+    @Override
+    public Tran getAidAndCidByTid(String id) {
+
+        Tran t1 = tranDao.getAidAndCidByTid(id);
+
+        return t1;
+    }
+
+    @Override
+    public Tran detail(String id) {
+
+        Tran t = tranDao.detail(id);
+
+        return t;
     }
 
 

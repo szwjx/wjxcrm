@@ -29,10 +29,11 @@
             c.address
 
         from tbl_user u
-        join tbl_contacts c
-        join tbl_customer con
-        on con.id=c.customerId
+        left join tbl_contacts c
         on u.id=c.owner
+        left join tbl_customer con
+        on con.id=c.customerId
+
         where c.id=#{id}
 
 
@@ -104,7 +105,7 @@
         con.address
 
         from tbl_contacts con
-        join tbl_customer cus
+        left join tbl_customer cus
         on cus.id=con.customerId
         where con.id=#{id}
     </select>
@@ -128,8 +129,8 @@
         select count(*)
 
         from tbl_contacts c
-        join tbl_user u
-        join tbl_customer cus
+        left join tbl_user u
+        left join tbl_customer cus
         on cus.owner=u.id
         on cus.id=c.customerId
 
@@ -165,8 +166,8 @@
 
 
         from tbl_contacts c
-        join tbl_user u
-        join tbl_customer cus
+        left join tbl_user u
+        left join tbl_customer cus
         on cus.owner=u.id
         on cus.id=c.customerId
 

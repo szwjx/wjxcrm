@@ -44,7 +44,7 @@ public class CustomerController extends HttpServlet {
         }else  if("/workbench/customer/pageList.do".equals(path)){
             pageList(request,response);
         }else  if("/workbench/customer/delete.do".equals(path)){
-            pageLdeleteist(request,response);
+            delete(request,response);
         }else  if("/workbench/customer/getUserListAndCustomer.do".equals(path)){
             getUserListAndCustomer(request,response);
         }else  if("/workbench/customer/update.do".equals(path)){
@@ -290,12 +290,12 @@ public class CustomerController extends HttpServlet {
 
     }
 
-    private void pageLdeleteist(HttpServletRequest request, HttpServletResponse response) {
+    private void delete(HttpServletRequest request, HttpServletResponse response) {
 
         System.out.println("执行删除客户操作");
 
         //接收前端数据
-        String ids[] = request.getParameterValues("id");
+        String[] ids = request.getParameterValues("id");
 
         CustomerService cs = (CustomerService) ServiceFactory.getService(new CustomerServiceImpl());
 

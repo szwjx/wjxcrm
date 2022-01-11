@@ -257,7 +257,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 
 			})
 
-			//为提交（市场活动）按钮绑定事件，填充联系人源，（填写两项信息 名字+id）
+			//为提交（联系人）按钮绑定事件，填充联系人源，（填写两项信息 名字+id）
 			$("#submitContactsBtn").click(function () {
 
 				//取得选中市场活动的id
@@ -438,7 +438,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
 		<h3>创建交易</h3>
 	  	<div style="position: relative; top: -40px; left: 70%;">
 			<button type="button" class="btn btn-primary" id="saveTranBtn">保存</button>
-			<button type="button" class="btn btn-default">取消</button>
+			<button type="button" class="btn btn-default" onclick="window.history.back();">取消</button>
 		</div>
 		<hr style="position: relative; top: -40px;">
 	</div>

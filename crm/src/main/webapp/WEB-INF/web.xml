@@ -148,5 +148,10 @@
         <url-pattern>/workbench/transaction/getCustomerName.do</url-pattern>
         <url-pattern>/workbench/transaction/save.do</url-pattern>
         <url-pattern>/workbench/transaction/pageList.do</url-pattern>
+        <url-pattern>/workbench/transaction/edit.do</url-pattern>
+        <url-pattern>/workbench/transaction/deleteTransaction.do</url-pattern>
+        <url-pattern>/workbench/transaction/update.do</url-pattern>
+        <url-pattern>/workbench/transaction/delete.do</url-pattern>
+        <url-pattern>/workbench/transaction/detail.do</url-pattern>
     </servlet-mapping>
 </web-app>

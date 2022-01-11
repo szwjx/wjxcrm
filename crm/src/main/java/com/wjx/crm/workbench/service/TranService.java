@@ -18,4 +18,12 @@ public interface TranService {
     List<Tran> getTransactionListByContactsId(String contactsId);
 
     PaginationVO<Tran> pageList(Map<String, Object> map);
+
+    Tran getTranById(String id);
+
+    boolean update(Tran t);
+
+    Tran getAidAndCidByTid(String id);
+
+    Tran detail(String id);
 }
